@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Thư viện Online - Liên Hệ Hỗ Trợ</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="quanlynguoidung.css">
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchForm = document.getElementById("searchForm");
+            const userTableBody = document.getElementById("userTableBody");
+            const statusMessage = document.getElementById("statusMessage");
+
+            // Hàm tải tất cả dữ liệu người dùng
+            function fetchUserData() {
+                statusMessage.style.display = "block";
+                statusMessage.textContent = "Đang tải dữ liệu...";
+
+                fetch("lienhe_hotro.php")
+                    .then(response => response.json())
+                    .then(users => {
+                        statusMessage.style.display = "none";
+                        renderUserTable(users);
+                    })
+                    .catch(error => {
+                        statusMessage.textContent = "Lỗi khi tải dữ liệu!";
+                        console.error("Lỗi khi tải dữ liệu:", error);
+                    });
+            }
+
+            // Hàm xử lý tìm kiếm và lọc
+            function fetchFilteredUsers(keyword, filterType) {
+                statusMessage.style.display = "block";
+                statusMessage.textContent = "Đang tải dữ liệu...";
+
+                fetch("loc1.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ keyword, filterType })
+                })
+                    .then(response => response.json())
+                    .then(users => {
+                        statusMessage.style.display = "none";
+                        renderUserTable(users);
+                    })
+                    .catch(error => {
+                        statusMessage.textContent = "Lỗi khi tải dữ liệu!";
+                        console.error("Lỗi khi tải dữ liệu:", error);
+                    });
+            }
+
+            // Hàm hiển thị dữ liệu người dùng lên bảng
+            function renderUserTable(users) {
+                userTableBody.innerHTML = "";
+                if (!Array.isArray(users) || users.length === 0) {
+                    userTableBody.innerHTML = "<tr><td colspan='5'>Không tìm thấy kết quả.</td></tr>";
+                    return;
+                }
+                users.forEach(user => {
+                    const row = `
+                        <tr>
+                            <td>${user.hoten}</td>
+                            <td>${user.email}</td>
+                            <td>${user.sdt}</td>
+                            <td>${user.diachi}</td>
+                            <td>${user.loinhan}</td>
+                        </tr>
+                    `;
+                    userTableBody.innerHTML += row;
+                });
+            }
+
+            // Ngăn reload form khi tìm kiếm và thực hiện tìm kiếm
+            searchForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                const keyword = document.getElementById("searchInput").value.trim();
+                const filterType = document.getElementById("filterType").value;
+                fetchFilteredUsers(keyword, filterType);
+            });
+
+            // Tải dữ liệu lần đầu khi trang vừa tải
+            fetchUserData();
+        });
+
+        function resetDisplay() {
+            console.log("resetDisplay() được gọi!");
+            // Xóa nội dung ô tìm kiếm
+            document.getElementById("searchInput").value = "";
+            // Đưa bộ lọc về giá trị mặc định
+            document.getElementById("filterType").selectedIndex = 0;
+            // Xóa dữ liệu hiện tại trong bảng
+            document.getElementById("userTableBody").innerHTML = "";
+            // Gọi lại fetchUserData() để tải toàn bộ dữ liệu từ database
+            fetchUserData();
+        }
+
+    </script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+
+                <!-- Menu chính -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://short.com.vn/VSYd">Quản lý người
+                            dùng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-sach/quanlysach.html">Quản
+                            lý sách</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-tintuc/quanlytintuc.html">Quản
+                            lý tin tức</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-chude/quanlychude.html">Quản
+                            lý chủ đề</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Lienhe-hotro/lienhe_hotro.html">Liên hệ hỗ trợ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Thongke/thongke.html">Thống
+                            kê</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/BaoCao/baocao.html">Báo cáo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-chude/logout.php">Đăng xuất</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <style>
+        body {
+            background-color: #873e23;
+            /* Màu nền mong muốn */
+        }
+
+        .table {
+            background-color: white !important;
+            /* Giữ màu trắng cho bảng */
+        }
+    </style>
+    <!-- Main Content -->
+    <main class="container mt-5">
+        <h2 class="text-center">Liên Hệ Hỗ Trợ</h2>
+
+        <!-- Form tìm kiếm và lọc -->
+        <div class="mb-4 d-flex align-items-center">
+            <form id="searchForm" class="d-flex search-form">
+                <select id="filterType" class="form-select me-2">
+                    <option value="name">Lọc theo tên</option>
+                    <option value="address">Lọc theo địa chỉ</option>
+                </select>
+                <input id="searchInput" class="form-control me-2" type="text" placeholder="Nhập từ khóa...">
+                <button type="submit" class="btn btn-danger me-2">Lọc</button>
+                <button class="btn btn-warning me-2" type="button" onclick="resetDisplay()">Reset</button>
+            </form>
+        </div>
+
+        <!-- Thông báo trạng thái -->
+        <p id="statusMessage" style="display: none; color: red;">Đang tải dữ liệu...</p>
+
+        <!-- Bảng hiển thị kết quả -->
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Họ Tên</th>
+                    <th>Email</th>
+                    <th>SĐT</th>
+                    <th>Địa Chỉ</th>
+                    <th>Lời Nhắn</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody"></tbody>
+        </table>
+    </main>
+</body>
+
+</html>

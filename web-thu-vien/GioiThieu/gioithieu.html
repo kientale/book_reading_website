@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Thư viện Online</title>
+
+
+    <link rel="stylesheet" href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/GioiThieu/gioithieu.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/JS/main.js" defer></script>
+
+</head>
+
+<body class="loading">
+    <!-- Loading Animation -->
+    <div id="loading"></div>
+
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <!-- Nút toggle khi thu nhỏ -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Danh sách menu -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 menu">
+                        <li class="nav-item">
+                            <a class="nav-link active"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/trangchu/trangchu.html">Trang
+                                chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/GioiThieu/gioithieu.html">Giới
+                                thiệu</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/SanPham/sanpham.html">Sản
+                                phẩm</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Tintuc/tintuc.html">Tin
+                                tức</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Lienhe/lienhe.html">Liên
+                                hệ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/DangNhap_DangKy/DangNhap/dangnhap.html">Đăng
+                                nhập</a>
+                        </li>
+                    </ul>
+
+                    <!-- Form tìm kiếm -->
+                    <form class="d-flex search-form">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section id="banner" class="d-flex align-items-center justify-content-center text-center">
+            <div class="text-content">
+                <h3>KTL - LIBRARY</h3>
+                <h1>CLASS OF 2025</h1>
+                <hr class="line">
+            </div>
+        </section>
+
+        <section id="about" class="py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <!-- Cột hình ảnh -->
+                    <div class="col-lg-6 text-center">
+                        <img src="https://i.pinimg.com/736x/4e/2c/10/4e2c10aadd578b4835065fddb7a5f2a8.jpg"
+                            alt="Library Image" class="img-fluid rounded shadow-lg" style="margin-right: 10px;">
+                    </div>
+
+                    <!-- Cột nội dung -->
+                    <div class="col-lg-6">
+                        <h3 class="text-uppercase text-primary fw-bold">A little about us</h3>
+                        <hr class="my-3" style="border-color:#d3d3d3;">
+                        <p class="text-dark">
+                            Trong thời đại số hóa, việc tiếp cận tri thức chưa bao giờ dễ dàng hơn với
+                            <strong>Thư Viện Thông Minh - LKT</strong> – một nền tảng thư viện trực tuyến hiện đại.
+                        </p>
+                        <p class="text-muted">
+                            Chúng tôi cung cấp không gian đọc sách trực tuyến tiện lợi với hàng nghìn đầu sách thuộc
+                            nhiều thể loại:
+                            văn học, khoa học, lịch sử, kỹ năng sống và kinh doanh.
+                        </p>
+                        <p class="text-muted">
+                            Với giao diện thân thiện, hệ thống tìm kiếm thông minh, LKT giúp người dùng dễ dàng tiếp cận
+                            nội dung yêu thích, phục vụ học tập, nghiên cứu và giải trí.
+                        </p>
+                        <a href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/SanPham/sanpham.html"
+                            class="btn btn-primary mt-3">Tìm hiểu ngay</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services">
+            <div class="container">
+                <div class="section-heading text-center">
+                    <h3 class="text-uppercase"> <strong>DỊCH VỤ THƯ VIỆN</strong></h3>
+                    <hr>
+                </div>
+
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    <div class="col">
+                        <div class="service-item text-center">
+                            <div class="icon-container">
+                                <i class="fa fa-book"></i>
+                            </div>
+                            <h3>Kho Sách</h3>
+                            <h4>Hàng nghìn đầu sách đa dạng</h4>
+                            <p>Truy cập hàng nghìn đầu sách thuộc nhiều thể loại như văn học, khoa học, lịch sử, kỹ năng
+                                sống và kinh doanh.</p>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="service-item text-center">
+                            <div class="icon-container">
+                                <i class="fa fa-laptop"></i>
+                            </div>
+                            <h3>Tài Liệu Học Tập</h3>
+                            <h4>Giáo trình, bài báo khoa học</h4>
+                            <p>Cung cấp tài liệu học tập, giáo trình, bài báo khoa học và tài nguyên tham khảo phục vụ
+                                nghiên cứu.</p>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="service-item text-center">
+                            <div class="icon-container">
+                                <i class="fa fa-headphones"></i>
+                            </div>
+                            <h3>Nghe Sách</h3>
+                            <h4>Truy cập kho sách nói đa dạng</h4>
+                            <p>Nghe sách nói mọi lúc, mọi nơi giúp bạn tiếp cận tri thức một cách dễ dàng hơn.</p>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="service-item text-center">
+                            <div class="icon-container">
+                                <i class="fa fa-search"></i>
+                            </div>
+                            <h3>Tra Cứu Tài Liệu</h3>
+                            <h4>Tìm kiếm tài liệu nhanh chóng</h4>
+                            <p>Công cụ tra cứu và tìm kiếm tài liệu thông minh giúp bạn dễ dàng tiếp cận nội dung cần
+                                thiết.</p>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="service-item text-center">
+                            <div class="icon-container">
+                                <i class="fa fa-users"></i>
+                            </div>
+                            <h3>Câu Lạc Bộ Đọc Sách</h3>
+                            <h4>Kết nối những người yêu sách</h4>
+                            <p>Tham gia các câu lạc bộ đọc sách, thảo luận, chia sẻ cảm nhận và giao lưu.</p>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="service-item text-center">
+                            <div class="icon-container">
+                                <i class="fa fa-download"></i>
+                            </div>
+                            <h3>Tải Xuống Tài Liệu</h3>
+                            <h4>Đọc offline không cần mạng</h4>
+                            <p>Tải xuống tài liệu, ebook và bài báo để đọc mọi lúc mà không cần kết nối internet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills">
+            <div class="container-fluid py-5">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 text-white">
+                            <h1><strong>Kỹ Năng</strong></h1>
+                            <h3>Chúng tôi làm điều này tốt nhất</h3>
+                            <p>
+                                Thư viện không chỉ là nơi lưu trữ tri thức mà còn là trung tâm học tập và phát triển kỹ
+                                năng.
+                                Chúng tôi cung cấp các tài liệu đa dạng về lập trình web, bao gồm HTML, CSS, JavaScript,
+                                PHP và nhiều ngôn ngữ khác.
+                                Bạn có thể truy cập hàng ngàn đầu sách và tài liệu hướng dẫn để nâng cao kỹ năng lập
+                                trình của mình.
+                            </p>
+                            <a href="#" class="btn btn-info me-2">Đọc Thêm</a>
+                            <a href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Lienhe/lienhe.html"
+                                class="btn btn-success">Liên Hệ Ngay</a>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="progress-bars" style="margin-left: 60px;">
+                                <div class="mb-4">
+                                    <h5>HTML5</h5>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-danger progress-animate" role="progressbar"
+                                            style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">
+                                            85%
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h5>CSS3</h5>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-primary progress-animate" role="progressbar"
+                                            style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                                            75%
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h5>JavaScript</h5>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-warning progress-animate" role="progressbar"
+                                            style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">
+                                            65%
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h5>PHP</h5>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success progress-animate" role="progressbar"
+                                            style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+                                            90%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="portfolio">
+            <div class="section-heading text-center">
+                <h3 class="text-uppercase" style="margin-top: 45px;"> Bộ Sưu Tập <strong>Thư Viện</strong></h3>
+                <hr class="icon">
+            </div>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="portfolio-thumb">
+                            <img src="https://i.pinimg.com/736x/3f/f9/c4/3ff9c4f2a367f3cdf31dfd7e282d3fa5.jpg"
+                                class="img-responsive">
+                            <div class="portfolio-overlay">
+                                <h2 class="vertical-align">Sách Mới Nhất</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="portfolio-thumb">
+                            <img src="https://i.pinimg.com/736x/a5/79/30/a579304ebee9a20bbd29b60cdc207a7a.jpg"
+                                class="img-responsive">
+                            <div class="portfolio-overlay">
+                                <h2 class="vertical-align">Không Gian Học Tập</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="portfolio-thumb">
+                            <img src="https://i.pinimg.com/736x/c4/48/32/c4483247245d770860e79d6fc43dabcf.jpg"
+                                class="img-responsive">
+                            <div class="portfolio-overlay">
+                                <h2 class="vertical-align">Kệ Sách Đa Dạng</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="portfolio-thumb">
+                            <img src="https://i.pinimg.com/736x/e5/67/77/e56777870c6064ea1cfd6dde7a81b9bd.jpg"
+                                class="img-responsive">
+                            <div class="portfolio-overlay">
+                                <h2 class="vertical-align">Góc Đọc Sách</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="portfolio-thumb">
+                            <img src="https://i.pinimg.com/736x/ff/55/09/ff55092b53faea916589762bb4d11aed.jpg"
+                                class="img-responsive">
+                            <div class="portfolio-overlay">
+                                <h2 class="vertical-align">Học Tập Nhóm</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="portfolio-thumb">
+                            <img src="https://i.pinimg.com/736x/6e/0a/1d/6e0a1d1c56bd02b5e2b66d30f7e76036.jpg"
+                                class="img-responsive">
+                            <div class="portfolio-overlay">
+                                <h2 class="vertical-align">Quản Lý Sách</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="team">
+            <div class="section-heading text-center" style="margin-top: 45px;">
+                <h3 class="text-uppercase">Thành Viên Nhóm</h3>
+                <hr class="icon">
+            </div>
+
+            <div class="container">
+
+                <!-- Đưa phần thành viên ra ngoài để hiển thị bên dưới -->
+                <div class="team-members">
+                    <div class="member" onclick="openPopup(
+                        'Trần Lê Hoàng Kiên', 
+                        '20221608',  // Mã sinh viên
+                        'DCCNTT 13.10.9', // Tên lớp
+                        'Trưởng Nhóm', 
+                        'http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/tran_le_hoang_kien.png', 
+                        'kien@example.com', 
+                        '0123-456-789', 
+                        'Lãnh đạo và quản lý nhóm.', 
+                        [
+                            { name: 'Nghe nhạc', img: 'http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/nghe_nhac.png' },
+                            { name: 'Đọc sách', img: 'http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/doc_sach.png' },
+                            { name: 'Xem phim', img: 'http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/xem_phim.png' }
+                        ])">
+                        <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/tran_le_hoang_kien.png"
+                            alt="Trần Lê Hoàng Kiên" class="member-img">
+                        <h4>Trần Lê Hoàng Kiên</h4>
+                        <p>Trưởng Nhóm</p>
+                    </div>
+
+                    <div class="member" onclick="openPopup(
+                        'Nguyễn Hoàng Long', 
+                        'Thành viên nhóm', 
+                        '20221539',  // Mã sinh viên
+                        'DCCNTT 13.10.9', // Tên lớp
+                        'http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/nguyen_hoang_long.png', 
+                        'long@example.com', 
+                        '0123-456-789', 
+                        'Thành viên đầy nhiệt huyết.', 
+                        [
+                            { name: 'Đá bóng', img: 'http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/da_bong.png' },
+                            { name: 'Gym', img: 'http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/tap_gym.png' },
+                            { name: 'Chơi game', img: 'http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/choi_game.png' }
+                        ])">
+                        <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/nguyen_hoang_long.png"
+                            alt="Nguyễn Hoàng Long" class="member-img">
+                        <h4>Nguyễn Hoàng Long</h4>
+                        <p>Thành viên</p>
+                    </div>
+
+                    <div class="member" onclick="openPopup(
+                        'Trần Lê Hoàng Kiên', 
+                        '20221654',  // Mã sinh viên
+                        'DCCNTT 13.10.9', // Tên lớp
+                        'Thành viên nhóm', 
+                        'http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/phan_tien_tien.png', 
+                        'kien@example.com', 
+                        '0123-456-789', 
+                        'Thành viên hát rất hay', 
+                        [
+                            { name: 'Ca hát', img: 'http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/ca_hat.png' },
+                            { name: 'Chơi game', img: 'http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/da_bong.png' },
+                            { name: 'Đá bóng', img: 'http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/choi_game.png' }
+                        ])">
+                        <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/phan_tien_tien.png"
+                            alt="Phan Tiến Tiến" class="member-img">
+                        <h4>Phan Tiến Tiến</h4>
+                        <p>Thành viên</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Popup Modal -->
+        <div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl"> <!-- Tăng kích thước modal -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="memberModalLabel">Thông Tin Thành Viên</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body row">
+                        <!-- Hình ảnh bên trái -->
+                        <div class="col-md-6 d-flex justify-content-center align-items-center">
+                            <img id="popup-img" src="" alt="Thành Viên" class="img-fluid rounded shadow-lg">
+                        </div>
+                        <!-- Thông tin bên phải -->
+                        <div class="col-md-6">
+                            <h3 id="popup-name"></h3>
+                            <p><strong>Mã sinh viên:</strong> <span id="popup-student-id"></span></p>
+                            <p><strong>Tên lớp:</strong> <span id="popup-class"></span></p>
+                            <p><strong>Chức vụ:</strong> <span id="popup-role"></span></p>
+                            <p><strong>Email:</strong> <span id="popup-email"></span></p>
+                            <p><strong>Số điện thoại:</strong> <span id="popup-phone"></span></p>
+                            <p><strong>Mô tả:</strong> <span id="popup-description"></span></p>
+
+                            <!-- Phần Sở Thích -->
+                            <h4 class="mt-4">Sở Thích</h4>
+                            <div id="popup-hobbies" class="d-flex flex-wrap"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+            function openPopup(name, studentId, className, role, imgSrc, email, phone, description, hobbies) {
+                document.getElementById("popup-name").innerText = name;
+                document.getElementById("popup-student-id").innerText = studentId; // Hiển thị mã sinh viên
+                document.getElementById("popup-class").innerText = className; // Hiển thị tên lớp
+                document.getElementById("popup-role").innerText = role;
+                document.getElementById("popup-img").src = imgSrc;
+                document.getElementById("popup-email").innerText = email;
+                document.getElementById("popup-phone").innerText = phone;
+                document.getElementById("popup-description").innerText = description;
+
+                // Hiển thị danh sách sở thích
+                let hobbiesContainer = document.getElementById("popup-hobbies");
+                hobbiesContainer.innerHTML = "";  // Xóa nội dung cũ
+                hobbies.forEach(hobby => {
+                    let hobbyItem = document.createElement("div");
+                    hobbyItem.classList.add("hobby-item");
+                    hobbyItem.innerHTML = `
+            <img src="${hobby.img}" alt="${hobby.name}" class="hobby-img">
+            <p>${hobby.name}</p>
+        `;
+                    hobbiesContainer.appendChild(hobbyItem);
+                });
+
+                // Hiển thị popup
+                var myModal = new bootstrap.Modal(document.getElementById('memberModal'));
+                myModal.show();
+            }
+        </script>
+
+        <!-- Icons góc dưới bên phải -->
+        <div class="floating-icons">
+            <a href="#" class="icon-btn chat-btn">
+                <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/man-2_icon-icons.com_55041.png"
+                    alt="Cá nhân">
+            </a>
+            <a href="#" class="icon-btn balo-btn" data-bs-toggle="modal" data-bs-target="#baloModal">
+                <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/shoppaymentorderbuy-34_icon-icons.com_73865.png"
+                    alt="Balo">
+            </a>
+            <a href="#" class="icon-btn scroll-top-btn">
+                <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/arrow_circle_up_icon_155797.png"
+                    alt="Lên đầu trang">
+            </a>
+            <a href="#" class="icon-btn scroll-top-btn" data-bs-toggle="modal" data-bs-target="#chatModal">
+                <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/social_facebook_messenger_icon-icons.com_66150.png"
+                    alt="Chat">
+            </a>
+        </div>
+
+        <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="chatModalLabel">Chat với AI</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="chat-output" class="border p-3 mb-3" style="height: 250px; overflow-y: auto;"></div>
+                        <div class="input-group">
+                            <input type="text" id="chat-input" class="form-control" placeholder="Nhập tin nhắn...">
+                            <button id="sendMessage" class="btn btn-success">Gửi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const chatOutput = document.getElementById("chat-output");
+                const chatInput = document.getElementById("chat-input");
+                const sendMessage = document.getElementById("sendMessage");
+
+                sendMessage.addEventListener("click", function () {
+                    const userMessage = chatInput.value.trim();
+                    if (userMessage === "") return;
+
+                    // Hiển thị tin nhắn người dùng
+                    chatOutput.innerHTML += `<div><strong>Bạn:</strong> ${userMessage}</div>`;
+                    chatInput.value = "";
+
+                    // Gửi đến server để xử lý AI
+                    fetch("chat_ai.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: userMessage })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            chatOutput.innerHTML += `<div><strong>AI:</strong> ${data.reply}</div>`;
+                            chatOutput.scrollTop = chatOutput.scrollHeight; // Cuộn xuống tin nhắn mới nhất
+                        })
+                        .catch(error => console.error("Lỗi gửi tin nhắn:", error));
+                });
+            });
+        </script>
+
+        <!-- Modal Balo -->
+        <div class="modal fade" id="baloModal" tabindex="-1" aria-labelledby="baloModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content p-3">
+                    <div class="modal-header">
+                        <h4 class="modal-title fw-bold" id="baloModalLabel">Sách đã lưu</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul id="savedBooksList" class="list-group">
+                            <!-- Danh sách sách sẽ hiển thị ở đây -->
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal"> Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                loadSavedBooks(); // Gọi hàm tải sách khi trang tải xong
+
+                // Sự kiện khi bấm nút "Thêm vào balo"
+                document.addEventListener("click", function (event) {
+                    if (!event.target.classList.contains("btn-dark")) return;
+
+                    let modal = event.target.closest(".modal");
+                    if (!modal) return;
+
+                    let title, author, year, imageSrc;
+                    if (modal.id === "bookModal") {
+                        title = document.getElementById("bookModalLabel").innerText;
+                        author = document.getElementById("modalAuthor").innerText;
+                        year = document.getElementById("modalYear").innerText;
+                        imageSrc = document.getElementById("modalImage").src;
+                    } else if (modal.id === "hotBookModal") {
+                        title = document.getElementById("hotBookModalLabel").innerText;
+                        author = document.getElementById("hotModalAuthor").innerText;
+                        year = document.getElementById("hotModalYear").innerText;
+                        imageSrc = document.getElementById("hotModalImage").src;
+                    } else {
+                        return;
+                    }
+
+                    const savedBooksList = document.getElementById("savedBooksList");
+
+                    // ❌ Kiểm tra nếu sách đã tồn tại trong danh sách thì không thêm nữa
+                    if ([...savedBooksList.children].some(li => li.dataset.title === title)) {
+                        alert("Sách đã tồn tại trong balo!");
+                        return;
+                    }
+
+                    // ✅ Thêm sách vào danh sách hiển thị
+                    const listItem = document.createElement("li");
+                    listItem.classList.add("list-group-item", "d-flex", "align-items-center", "justify-content-between");
+                    listItem.dataset.title = title;
+
+                    listItem.innerHTML = `
+            <img src="${imageSrc}" class="rounded shadow border" style="width: 50px;">
+            <span><strong>${title}</strong> - ${author} (${year})</span>
+            <div class="saved-book-buttons">
+                <button class="btn btn-sm btn-success">📖 Đọc ngay</button>
+                <button class="btn btn-sm btn-danger">❌ Xóa</button>
+            </div>
+        `;
+                    savedBooksList.appendChild(listItem);
+
+                    alert("Sách đã được lưu vào balo!");
+
+                    // 🔥 Gửi dữ liệu lên server để lưu vào CSDL
+                    fetch("save_book.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ title, author, year, image_url: imageSrc }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === "success") {
+                                console.log("Sách đã được lưu vào CSDL!");
+                            } else {
+                                console.error("Lỗi lưu sách:", data.message);
+                            }
+                        })
+                        .catch(error => console.error("Lỗi gửi yêu cầu:", error));
+                });
+
+                // Sự kiện xóa sách khỏi danh sách
+                document.addEventListener("click", function (event) {
+                    if (!event.target.classList.contains("btn-danger")) return;
+
+                    let listItem = event.target.closest("li");
+                    if (!listItem) return;
+
+                    let title = listItem.dataset.title;
+
+                    if (!confirm(`Bạn có chắc muốn xóa sách "${title}" khỏi balo?`)) return;
+
+                    // ❌ Tránh xóa 2 lần bằng cách kiểm tra sách có tồn tại không trước khi gọi API
+                    if (!document.body.contains(listItem)) {
+                        return;
+                    }
+
+                    fetch("xoa_saved_sach.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ ten_sach: title })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                listItem.remove(); // ✅ Xóa khỏi danh sách hiển thị
+                                alert("Sách đã được xóa khỏi balo!");
+                            } else {
+                                alert("Lỗi khi xóa sách: " + data.message);
+                            }
+                        })
+                        .catch(error => console.error("Lỗi gửi yêu cầu xóa:", error));
+                });
+
+            });
+
+            // Hàm tải sách đã lưu từ CSDL
+            function loadSavedBooks() {
+                fetch("get_saved_books.php")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === "success") {
+                            const books = data.books;
+                            const savedBooksList = document.getElementById("savedBooksList");
+                            savedBooksList.innerHTML = ""; // Xóa danh sách cũ
+
+                            books.forEach(book => {
+                                const listItem = document.createElement("li");
+                                listItem.classList.add("list-group-item", "d-flex", "align-items-center", "justify-content-between");
+                                listItem.dataset.title = book.book_title;
+
+                                listItem.innerHTML = `
+                        <img src="${book.image_url}" class="rounded shadow border" style="width: 50px;">
+                        <span><strong>${book.book_title}</strong> - ${book.author} (${book.year})</span>
+                        <div class="saved-book-buttons">
+                            <button class="btn btn-sm btn-success">📖 Đọc ngay</button>
+                            <button class="btn btn-sm btn-danger">❌ Xóa</button>
+                        </div>
+                    `;
+                                savedBooksList.appendChild(listItem);
+                            });
+                        } else {
+                            console.error("Lỗi: ", data.message);
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi tải sách:", error));
+            }
+        </script>
+
+        <!-- Popup (Modal) Bootstrap -->
+        <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userModalLabel">Thông tin người dùng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Họ Tên:</strong> <span id="popup-ho-ten"></span></p>
+                        <p><strong>Email:</strong> <span id="popup-email"></span></p>
+                        <p><strong>Tài khoản:</strong> <span id="popup-username"></span></p>
+                        <p><strong>Tuổi:</strong> <span id="popup-tuoi"></span></p>
+                        <p><strong>Số điện thoại:</strong> <span id="popup-so-dien-thoai"></span></p>
+                        <p><strong>Địa chỉ:</strong> <span id="popup-dia-chi"></span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="logoutBtn">
+                            Đăng xuất
+                        </button>
+                        <button type="button" class="btn btn-primary" id="editInfoBtn">
+                            Sửa thông tin
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Sửa Thông Tin -->
+        <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editUserModalLabel">Sửa Thông Tin</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editUserForm">
+                            <div class="mb-3">
+                                <label for="editHoTen" class="form-label">Họ Tên</label>
+                                <input type="text" class="form-control" id="editHoTen" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTaiKhoan" class="form-label">Tài Khoản</label>
+                                <input type="text" class="form-control" id="editTaiKhoan" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editMatKhau" class="form-label">Mật Khẩu</label>
+                                <input type="password" class="form-control" id="editMatKhau" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTuoi" class="form-label">Tuổi</label>
+                                <input type="number" class="form-control" id="editTuoi" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editSoDienThoai" class="form-label">Số Điện Thoại</label>
+                                <input type="text" class="form-control" id="editSoDienThoai" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editDiaChi" class="form-label">Địa Chỉ</label>
+                                <input type="text" class="form-control" id="editDiaChi" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let editBtn = document.getElementById("editInfoBtn");
+
+                if (!editBtn) {
+                    console.error("Không tìm thấy nút #editInfoBtn.");
+                    return;
+                }
+
+                editBtn.addEventListener("click", function () {
+                    let hoTenElem = document.getElementById("popup-ho-ten");
+                    let emailElem = document.getElementById("popup-email");
+                    let usernameElem = document.getElementById("popup-username");
+                    let tuoiElem = document.getElementById("popup-tuoi");
+                    let soDienThoaiElem = document.getElementById("popup-so-dien-thoai");
+                    let diaChiElem = document.getElementById("popup-dia-chi");
+
+                    if (!hoTenElem || !emailElem || !usernameElem || !tuoiElem || !soDienThoaiElem || !diaChiElem) {
+                        console.error("Không tìm thấy một trong các phần tử thông tin người dùng.");
+                        return;
+                    }
+
+                    let editHoTen = document.getElementById("editHoTen");
+                    let editTaiKhoan = document.getElementById("editTaiKhoan");
+                    let editMatKhau = document.getElementById("editMatKhau");
+                    let editTuoi = document.getElementById("editTuoi");
+                    let editEmail = document.getElementById("editEmail");
+                    let editSoDienThoai = document.getElementById("editSoDienThoai");
+                    let editDiaChi = document.getElementById("editDiaChi");
+
+                    if (!editHoTen || !editTaiKhoan || !editMatKhau || !editTuoi || !editEmail || !editSoDienThoai || !editDiaChi) {
+                        console.error("Không tìm thấy một trong các phần tử form chỉnh sửa.");
+                        return;
+                    }
+
+                    editHoTen.value = hoTenElem.textContent.trim();
+                    editTaiKhoan.value = usernameElem.textContent.trim();
+                    editMatKhau.value = "";
+                    editTuoi.value = tuoiElem.textContent.trim();
+                    editEmail.value = emailElem.textContent.trim();
+                    editSoDienThoai.value = soDienThoaiElem.textContent.trim();
+                    editDiaChi.value = diaChiElem.textContent.trim();
+
+                    let editModalElem = document.getElementById("editUserModal");
+                    if (!editModalElem) {
+                        console.error("Không tìm thấy modal #editUserModal.");
+                        return;
+                    }
+
+                    let editModal = new bootstrap.Modal(editModalElem);
+                    editModal.show();
+                });
+
+                let editUserForm = document.getElementById("editUserForm");
+                if (!editUserForm) {
+                    console.error("Không tìm thấy form #editUserForm.");
+                    return;
+                }
+
+                editUserForm.addEventListener("submit", function (event) {
+                    event.preventDefault();
+
+                    let updatedUserInfo = {
+                        taiKhoan: document.getElementById("editTaiKhoan").value.trim(),
+                        matKhau: document.getElementById("editMatKhau").value.trim(),
+                        hoTen: document.getElementById("editHoTen").value.trim(),
+                        tuoi: document.getElementById("editTuoi").value.trim(),
+                        email: document.getElementById("editEmail").value.trim(),
+                        soDienThoai: document.getElementById("editSoDienThoai").value.trim(),
+                        diaChi: document.getElementById("editDiaChi").value.trim(),
+                    };
+
+                    console.log("Dữ liệu gửi đi:", updatedUserInfo);
+
+                    fetch("suathongtin.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(updatedUserInfo),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("Phản hồi từ server:", data);
+                            if (data.success) {
+                                alert("Cập nhật thông tin thành công!");
+                                // Cập nhật nội dung modal ngay lập tức
+                                document.getElementById("popup-ho-ten").innerText = updatedUserInfo.hoTen;
+                                document.getElementById("popup-email").innerText = updatedUserInfo.email;
+                                document.getElementById("popup-username").innerText = updatedUserInfo.taiKhoan;
+                                document.getElementById("popup-tuoi").innerText = updatedUserInfo.tuoi;
+                                document.getElementById("popup-so-dien-thoai").innerText = updatedUserInfo.soDienThoai;
+                                document.getElementById("popup-dia-chi").innerText = updatedUserInfo.diaChi;
+
+                                // Cập nhật cookie để giữ thông tin mới
+                                document.cookie = `hoTen=${encodeURIComponent(updatedUserInfo.hoTen)}; path=/`;
+                                document.cookie = `email=${encodeURIComponent(updatedUserInfo.email)}; path=/`;
+                                document.cookie = `username=${encodeURIComponent(updatedUserInfo.taiKhoan)}; path=/`;
+                                document.cookie = `tuoi=${encodeURIComponent(updatedUserInfo.tuoi)}; path=/`;
+                                document.cookie = `soDienThoai=${encodeURIComponent(updatedUserInfo.soDienThoai)}; path=/`;
+                                document.cookie = `diaChi=${encodeURIComponent(updatedUserInfo.diaChi)}; path=/`;
+                            } else {
+                                alert("Lỗi: " + data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Lỗi khi gửi yêu cầu:", error);
+                            alert("Có lỗi xảy ra khi cập nhật. Vui lòng thử lại.");
+                        });
+                });
+            });
+
+
+            // Đợi DOM load trước khi chạy script
+            document.addEventListener("DOMContentLoaded", function () {
+                // Hàm lấy giá trị từ cookie
+                function getCookie(name) {
+                    let cookies = document.cookie.split("; ");
+                    for (let i = 0; i < cookies.length; i++) {
+                        let parts = cookies[i].split("=");
+                        if (parts[0] === name) {
+                            return decodeURIComponent(parts[1]);
+                        }
+                    }
+                    return ""; // Trả về chuỗi rỗng nếu không tìm thấy
+                }
+
+                // Hiển thị thông tin người dùng khi mở modal
+                let chatButton = document.querySelector(".chat-btn");
+                if (chatButton) {
+                    chatButton.addEventListener("click", function () {
+                        let hoTenEl = document.getElementById("popup-ho-ten");
+                        let emailEl = document.getElementById("popup-email");
+                        let usernameEl = document.getElementById("popup-username");
+                        let tuoiEl = document.getElementById("popup-tuoi");
+                        let soDienThoaiEl = document.getElementById("popup-so-dien-thoai");
+                        let diaChiEl = document.getElementById("popup-dia-chi");
+
+                        // Kiểm tra xem các phần tử có tồn tại trước khi gán giá trị
+                        if (hoTenEl && emailEl && usernameEl && tuoiEl && soDienThoaiEl && diaChiEl) {
+                            hoTenEl.innerText = getCookie("hoTen") || "Chưa đăng nhập";
+                            emailEl.innerText = getCookie("email") || "Chưa đăng nhập";
+                            usernameEl.innerText = getCookie("username") || "Chưa đăng nhập";
+                            tuoiEl.innerText = getCookie("tuoi") || "Chưa có dữ liệu";
+                            soDienThoaiEl.innerText = getCookie("soDienThoai") || "Chưa có dữ liệu";
+                            diaChiEl.innerText = getCookie("diaChi") || "Chưa có dữ liệu";
+                        } else {
+                            console.error("Không tìm thấy phần tử hiển thị thông tin người dùng.");
+                        }
+                    });
+                } else {
+                    console.error("Không tìm thấy nút mở modal. Kiểm tra lại class.");
+                }
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+                let logoutBtn = document.getElementById("logoutBtn");
+
+                if (!logoutBtn) {
+                    console.error("Không tìm thấy nút đăng xuất.");
+                    return;
+                }
+
+                logoutBtn.addEventListener("click", function () {
+                    if (!document.cookie.includes("username=")) {
+                        alert("Bạn chưa đăng nhập!");
+                        return;
+                    }
+
+                    // Hàm xóa cookie
+                    function deleteCookie(name) {
+                        document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                        document.cookie = name + "=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                    }
+
+                    // Xóa danh sách cookie liên quan đến tài khoản
+                    ["username", "hoTen", "email", "tuoi", "soDienThoai", "diaChi"].forEach(deleteCookie);
+
+                    // Log để kiểm tra
+                    console.log("Cookies sau khi xóa:", document.cookie);
+
+                    // Cập nhật giao diện (tải lại trang)
+                    alert("Bạn đã đăng xuất thành công!");
+                    window.location.reload();
+                });
+            });
+
+
+
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelector(".chat-btn").addEventListener("click", function (event) {
+                    event.preventDefault(); // Ngăn tải lại trang
+                    var myModal = new bootstrap.Modal(document.getElementById('userModal'));
+                    myModal.show();
+                });
+            });
+        </script>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" style="background-color:#873e23; height: 200px;">
+    </footer>
+</body>
+
+</html>

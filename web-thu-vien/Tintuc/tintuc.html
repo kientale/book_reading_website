@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Thư viện Online</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/JS/main.js" defer></script>
+    <link rel="stylesheet" href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Tintuc/tintuc.css">
+</head>
+
+<body class="loading">
+    <!-- Loading Animation -->
+    <div id="loading"></div>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <!-- Menu chính -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 menu">
+                        <li class="nav-item">
+                            <a class="nav-link active"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/trangchu/trangchu.html">Trang
+                                chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/GioiThieu/gioithieu.html">Giới
+                                thiệu</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/SanPham/sanpham.html">Sản
+                                phẩm</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Tintuc/tintuc.html">Tin
+                                tức</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Lienhe/lienhe.html">Liên
+                                hệ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/DangNhap_DangKy/DangNhap/dangnhap.html">Đăng
+                                nhập</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Form tìm kiếm -->
+                <form class="d-flex search-form">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Banner -->
+        <section id="banner" class="d-flex align-items-center justify-content-center text-center">
+            <div class="text-content">
+                <h3>KTL - LIBRARY</h3>
+                <h1>CLASS OF 2025</h1>
+                <hr class="line">
+            </div>
+        </section>
+
+        <!-- Tin tức -->
+        <!-- Section 3-->
+        <div class="news">
+            <div class="news-1">
+                <section class="section-3" id="section-3">
+                    <h2 class="news-title">Sự kiện</h2>
+                    <div class="news-container">
+                        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active" data-bs-interval="3000">
+                                    <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/1.jpg"
+                                        class="news-image" alt="Slide 1">
+                                </div>
+                                <div class="carousel-item" data-bs-interval="3000">
+                                    <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/2.jpg"
+                                        class="news-image" alt="Slide 2">
+                                </div>
+                                <div class="carousel-item" data-bs-interval="3000">
+                                    <img src="https://i.pinimg.com/736x/82/89/12/8289122618dab447dc5162a9a0ce5ba2.jpg"
+                                        class="news-image" alt="Slide 3">
+                                </div>
+                                <div class="carousel-item" data-bs-interval="3000">
+                                    <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/3.jpg"
+                                        class="news-image" alt="Slide 1">
+                                </div>
+                                <div class="carousel-item" data-bs-interval="3000">
+                                    <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/4.jpg"
+                                        class="news-image" alt="Slide 2">
+                                </div>
+                                <div class="carousel-item" data-bs-interval="3000">
+                                    <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/5.jpg"
+                                        class="news-image" alt="Slide 3">
+                                </div>
+                            </div>
+
+                            <!-- Nút điều hướng trái/phải -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
+                                data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
+                                data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            </button>
+                        </div>
+
+                        <!-- Mô tả tin tức -->
+                        <div class="news-caption">
+                            <h5 id="news-title">Hội thảo sách hằng năm</h5>
+                            <p id="news-desc"> <strong>Thời gian:</strong>10:00 AM, 15/03/2025<br>
+                                <strong>Địa điểm:</strong>Thư viện Quốc gia, Hà Nội<br>
+                                <strong>Mô tả:</strong>Hội thảo sách hằng năm là một sự kiện quan trọng nhằm tôn vinh
+                                văn
+                                hóa
+                                đọc và khuyến
+                                khích thói quen đọc sách trong cộng đồng. Chương trình năm nay quy tụ nhiều nhà văn, nhà
+                                nghiên
+                                cứu và
+                                chuyên gia xuất bản hàng đầu, hứa hẹn mang đến những góc nhìn mới về ngành xuất bản hiện
+                                đại.
+                                Ngoài ra, các
+                                độc giả cũng sẽ có cơ hội tham gia các buổi tọa đàm, workshop kỹ năng đọc hiệu quả, cũng
+                                như
+                                giao lưu với
+                                các tác giả nổi tiếng. Sự kiện không chỉ dành cho những người yêu sách mà còn cho các
+                                nhà
+                                xuất
+                                bản, nhà giáo
+                                dục và những ai quan tâm đến tương lai của sách.<br>
+                                <strong>Thông tin liên hệ:</strong>Liên hệ: 0987 654 321
+                            </p>
+                        </div>
+                    </div>
+                    <section id="portfolio">
+                        <div class="section-heading text-center">
+                            <h3 class="text-uppercase" style="color: white; font-weight: bold;"> Khuyến mãi và ưu đãi
+                            </h3>
+                            <hr class="icon">
+                        </div>
+
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="portfolio-thumb">
+                                        <img src="https://i.pinimg.com/736x/3f/f9/c4/3ff9c4f2a367f3cdf31dfd7e282d3fa5.jpg"
+                                            class="img-responsive">
+                                        <div class="portfolio-overlay">
+                                            <h2 class="vertical-align">
+                                                <h2>Cách trở thành người thành công</h2>
+                                                <p>Sách cực hay đang được giảm giá cực sốc.</p>
+                                                <p>Giá gốc <span class="old-price">100k</span> giờ chỉ còn <span
+                                                        class="new-price">99k</span></p>
+                                            </h2>
+                                            <a href="#"> <i class="fa fa-search"></i> </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="portfolio-thumb">
+                                        <img src="https://i.pinimg.com/736x/a5/79/30/a579304ebee9a20bbd29b60cdc207a7a.jpg"
+                                            class="img-responsive">
+                                        <div class="portfolio-overlay">
+                                            <h2 class="vertical-align">
+                                                <h2>Cách trở thành người thành công</h2>
+                                                <p>Sách cực hay đang được giảm giá cực sốc.</p>
+                                                <p>Giá gốc <span class="old-price">100k</span> giờ chỉ còn <span
+                                                        class="new-price">99k</span></p>
+                                            </h2>
+                                            <a href="#"> <i class="fa fa-search"></i> </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="portfolio-thumb">
+                                        <img src="https://i.pinimg.com/736x/c4/48/32/c4483247245d770860e79d6fc43dabcf.jpg"
+                                            class="img-responsive">
+                                        <div class="portfolio-overlay">
+                                            <h2 class="vertical-align">
+                                                <h2>Cách trở thành người thành công</h2>
+                                                <p>Sách cực hay đang được giảm giá cực sốc.</p>
+                                                <p>Giá gốc <span class="old-price">100k</span> giờ chỉ còn <span
+                                                        class="new-price">99k</span></p>
+                                            </h2>
+                                            <a href="#"> <i class="fa fa-search"></i> </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="portfolio-thumb">
+                                        <img src="https://i.pinimg.com/736x/e5/67/77/e56777870c6064ea1cfd6dde7a81b9bd.jpg"
+                                            class="img-responsive">
+                                        <div class="portfolio-overlay">
+                                            <h2 class="vertical-align">
+                                                <h2>Cách trở thành người thành công</h2>
+                                                <p>Sách cực hay đang được giảm giá cực sốc.</p>
+                                                <p>Giá gốc <span class="old-price">100k</span> giờ chỉ còn <span
+                                                        class="new-price">99k</span></p>
+                                            </h2>
+                                            <a href="#"> <i class="fa fa-search"></i> </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="portfolio-thumb">
+                                        <img src="https://i.pinimg.com/736x/ff/55/09/ff55092b53faea916589762bb4d11aed.jpg"
+                                            class="img-responsive">
+                                        <div class="portfolio-overlay">
+                                            <h2 class="vertical-align">
+                                                <h2>Cách trở thành người thành công</h2>
+                                                <p>Sách cực hay đang được giảm giá cực sốc.</p>
+                                                <p>Giá gốc <span class="old-price">100k</span> giờ chỉ còn <span
+                                                        class="new-price">99k</span></p>
+                                            </h2>
+                                            <a href="#"> <i class="fa fa-search"></i> </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="portfolio-thumb">
+                                        <img src="https://i.pinimg.com/736x/6e/0a/1d/6e0a1d1c56bd02b5e2b66d30f7e76036.jpg"
+                                            class="img-responsive">
+                                        <div class="portfolio-overlay">
+                                            <h2 class="vertical-align">
+                                                <h2>Cách trở thành người thành công</h2>
+                                                <p>Sách cực hay đang được giảm giá cực sốc.</p>
+                                                <p>Giá gốc <span class="old-price">100k</span> giờ chỉ còn <span
+                                                        class="new-price">99k</span></p>
+                                            </h2>
+                                            <a href="#"> <i class="fa fa-search"></i> </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <div class="review-book container">
+                    <h2 class="text-center text-success mb-4">
+                        <i class="bi bi-book"></i> Bài Review Sách
+                    </h2>
+                    <div class="row row-cols-1 row-cols-md-2 g-4" id="review-list" style="padding: 20px;">
+                        <!-- Các bài review sẽ được hiển thị ở đây -->
+                    </div>
+                </div>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        AOS.init({
+                            duration: 800, // Thời gian chuyển động (ms)
+                            once: true, // Chỉ chạy một lần khi xuất hiện
+                        });
+                    });
+
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const reviews = [
+                            {
+                                title: "Đắc Nhân Tâm",
+                                description: "Cuốn sách giúp bạn phát triển kỹ năng giao tiếp và tạo ảnh hưởng.",
+                                content: "Đắc Nhân Tâm là một trong những cuốn sách kinh điển nhất về nghệ thuật giao tiếp và ứng xử, giúp hàng triệu người trên thế giới thay đổi cách nhìn nhận về các mối quan hệ. Cuốn sách do Dale Carnegie viết, đã được dịch sang nhiều thứ tiếng và trở thành cẩm nang không thể thiếu của những ai muốn phát triển bản thân, nâng cao kỹ năng giao tiếp và tạo dựng ảnh hưởng.Nội dung sách không chỉ dừng lại ở việc hướng dẫn cách giao tiếp hiệu quả mà còn tập trung vào cách làm thế nào để thực sự thấu hiểu người khác, tạo ra những mối quan hệ tốt đẹp, bền vững. Một trong những nguyên tắc quan trọng mà tác giả nhấn mạnh chính là sự chân thành. Khi giao tiếp với người khác, hãy thật lòng quan tâm, đặt mình vào vị trí của họ và lắng nghe một cách chủ động. Bằng cách này, chúng ta có thể dễ dàng gây thiện cảm và xây dựng lòng tin.Cuốn sách cũng trình bày nhiều bài học thực tiễn thông qua những câu chuyện có thật, giúp người đọc dễ dàng áp dụng vào cuộc sống. Một trong những bài học nổi bật là cách kiểm soát cảm xúc trong các tình huống khó khăn. Nếu bạn muốn thành công trong công việc và cuộc sống, Đắc Nhân Tâm chính là một lựa chọn tuyệt vời.",
+                                image: "http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/dac-nhan-tam-review.png",
+                                date: "2025-03-13"
+                            },
+                            {
+                                title: "Nhà Giả Kim",
+                                description: "Một câu chuyện đầy cảm hứng về hành trình tìm kiếm giấc mơ.",
+                                content: "Nhà Giả Kim của Paulo Coelho là một tác phẩm kinh điển về hành trình tìm kiếm giấc mơ và khám phá bản thân. Cuốn sách kể về câu chuyện của Santiago, một cậu bé chăn cừu người Tây Ban Nha, luôn mơ về kho báu ẩn giấu tại Kim Tự Tháp Ai Cập. Với niềm tin mãnh liệt vào số phận và sự dẫn dắt của những dấu hiệu, Santiago quyết định rời bỏ cuộc sống quen thuộc để bắt đầu một cuộc hành trình đầy thử thách. Cuốn sách không chỉ đơn thuần kể về một cuộc phiêu lưu, mà còn truyền tải nhiều triết lý sống sâu sắc. Một trong những thông điệp quan trọng nhất mà tác giả gửi gắm là: Khi bạn thực sự mong muốn điều gì, cả vũ trụ sẽ hợp lực giúp bạn đạt được điều đó. Điều này nhắc nhở chúng ta rằng, nếu có niềm tin và quyết tâm theo đuổi giấc mơ, chắc chắn sẽ có cơ hội thành công.Ngoài ra, Nhà Giả Kim còn đề cao giá trị của sự kiên trì, lòng dũng cảm và khả năng chấp nhận thử thách. Santiago không ít lần đối mặt với thất bại, nhưng chính những khó khăn đó giúp cậu trưởng thành hơn và hiểu rõ bản thân hơn. Nếu bạn đang tìm kiếm một cuốn sách có thể truyền cảm hứng mạnh mẽ, Nhà Giả Kim chắc chắn là lựa chọn không thể bỏ qua.",
+                                image: "http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/review-nha-gia-kim.png",
+                                date: "2025-03-10"
+                            },
+                            {
+                                title: "Bí mật của Phan Thiên Ân",
+                                description: "Cuốn sách chứa đựng nhiều bài học sâu sắc về cuộc sống.",
+                                content: "Bí Mật Của Phan Thiên Ân là một tác phẩm chứa đựng nhiều bài học giá trị về cuộc sống, thành công và sự phát triển cá nhân. Cuốn sách kể về hành trình của nhân vật chính - Phan Thiên Ân - một con người bình thường nhưng đã có những thay đổi phi thường sau khi tiếp nhận những bí quyết sống ý nghĩa.Điểm nổi bật của sách là sự kết hợp giữa những câu chuyện đời thực với các triết lý sống. Qua từng chương, người đọc sẽ nhận ra rằng thành công không đến từ may mắn mà là kết quả của một quá trình rèn luyện bản thân không ngừng. Một trong những thông điệp quan trọng của sách chính là: Hãy sống có mục tiêu, có định hướng và luôn giữ vững niềm tin vào bản thân. Cuốn sách cũng đề cao giá trị của lòng biết ơn, sự chân thành và tinh thần trách nhiệm. Bằng cách áp dụng những nguyên tắc này vào cuộc sống, mỗi người đều có thể đạt được sự thành công và hạnh phúc. Đây là một cuốn sách rất đáng đọc dành cho những ai muốn tìm kiếm động lực để thay đổi và phát triển bản thân.",
+                                image: "http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/review-bi-mat-phan-thien-an.png",
+                                date: "2025-03-08"
+                            },
+                            {
+                                title: "Tư Duy Nhanh và Chậm",
+                                description: "Giải thích cách bộ não con người xử lý thông tin và ra quyết định.",
+                                content: "Cuốn sách giúp bạn hiểu về hai hệ thống tư duy: tư duy nhanh và tư duy chậm.",
+                                image: "http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/review-tu-duy-nhanh-va-cham.png",
+                                date: "2025-03-05"
+                            },
+                            {
+                                title: "7 Thói Quen Hiệu Quả",
+                                description: "Bí quyết giúp bạn đạt được thành công trong công việc và cuộc sống.",
+                                content: "Stephen R. Covey trình bày 7 thói quen giúp bạn phát triển bản thân bền vững.",
+                                image: "http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/review-7-thoi-quen-hieu-qua.png",
+                                date: "2025-03-03"
+                            },
+                            {
+                                title: "Dám Bị Ghét",
+                                description: "Sách giúp bạn hiểu cách sống hạnh phúc và không bị ảnh hưởng bởi người khác.",
+                                content: "Lấy cảm hứng từ tâm lý học Adler, sách hướng dẫn cách sống tự do và mạnh mẽ hơn.",
+                                image: "http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/review-dam-bi-ghet.png",
+                                date: "2025-03-01"
+                            },
+                            {
+                                title: "Chiến Binh Cầu Vồng",
+                                description: "Một câu chuyện cảm động về giáo dục và nghị lực vượt khó.",
+                                content: "Tác phẩm của Andrea Hirata kể về những đứa trẻ trên đảo Belitong đầy gian khó.",
+                                image: "http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/review-chien-binh-cau-vong.png",
+                                date: "2025-02-28"
+                            },
+                            {
+                                title: "Người Giàu Có Nhất Thành Babylon",
+                                description: "Cuốn sách về quản lý tài chính cá nhân dựa trên những câu chuyện cổ xưa.",
+                                content: "Dạy bạn cách tiết kiệm, đầu tư và quản lý tiền bạc để đạt được sự giàu có.",
+                                image: "http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/review-nguoi-giau-co-nhat-babylon.png",
+                                date: "2025-02-25"
+                            },
+                            {
+                                title: "Sống Thực Tế Giữa Đời Thực Dụng",
+                                description: "Giúp bạn tìm ra hướng đi đúng đắn trong cuộc sống hiện đại.",
+                                content: "Sách chia sẻ cách tư duy và hành động thực tế để đạt được thành công.",
+                                image: "http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/review-song-thuc-te.png",
+                                date: "2025-02-20"
+                            },
+                            {
+                                title: "Bí Mật Tư Duy Triệu Phú",
+                                description: "Hướng dẫn cách thay đổi tư duy để trở nên giàu có.",
+                                content: "T. Harv Eker chỉ ra sự khác biệt trong tư duy giữa người giàu và người nghèo.",
+                                image: "http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/review-bi-mat-trieu-phu.png",
+                                date: "2025-02-15"
+                            },
+                        ];
+
+
+                        let reviewList = document.getElementById("review-list");
+                        reviewList.innerHTML = "";
+
+                        reviews.forEach(review => {
+                            reviewList.innerHTML += `
+        <div class="col" data-aos="fade-up">
+            <div class="card shadow-sm">
+                <img src="${review.image}" class="card-img-top" alt="Hình ảnh sách">
+                <div class="card-body">
+                    <h5 class="card-title">${review.title}</h5>
+                    <p class="card-text">${review.description}</p>
+                    <p class="text-muted"><small>🕒 Ngày đăng: ${review.date}</small></p>
+                    <button class="btn btn-success btn-sm" 
+                        onclick="showReviewDetails('${review.title}', '${review.description}', '${review.content}', '${review.image}', '${review.date}')">
+                        Đọc bài review
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+                        });
+
+                        // Cập nhật AOS để nhận diện phần tử mới
+                        AOS.refresh();
+                    });
+
+                    function showReviewDetails(title, description, content, image, date) {
+                        alert(`📖 ${title}\n\n📝 ${description}\n\n📅 Ngày đăng: ${date}\n\n📜 Nội dung: ${content}`);
+                    }
+
+                    function showReviewDetails(title, description, content, image, date) {
+                        document.getElementById("reviewTitle").textContent = title;
+                        document.getElementById("reviewDescription").textContent = description;
+                        document.getElementById("reviewContent").textContent = content;
+                        document.getElementById("reviewImage").src = image;
+                        document.getElementById("reviewDate").textContent = "🕒 Ngày đăng: " + date;
+
+                        var reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+                        reviewModal.show();
+                    }
+
+                </script>
+
+                <!-- Modal Popup -->
+                <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="reviewModalLabel">Chi tiết bài review</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <img id="reviewImage" src="" class="img-fluid mb-3" alt="Hình ảnh sách">
+                                <h5 id="reviewTitle"></h5>
+                                <p class="text-muted" id="reviewDate"></p>
+                                <p id="reviewDescription"></p>
+                                <p id="reviewContent"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tin-tuc">
+                <h2 class="text-center text-primary mb-4" style="color: white !important; font-weight: bold;">
+                    Tin Tức Mới Nhất
+                </h2>
+                <div class="row row-cols-1 row-cols-md-2 g-4" id="news-list">
+                    <!-- Tin tức sẽ được hiển thị ở đây -->
+                </div>
+            </div>
+
+            <!-- Modal Chi Tiết -->
+            <div class="modal fade" id="newsModal" tabindex="-1" aria-labelledby="newsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="newsModalLabel"></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <img id="newsImage" class="modal-news-image mb-3" src="" alt="">
+                            <p class="text-muted"><small>🕒 Ngày đăng: <span id="newsDate"></span></small></p>
+                            <p id="newsContent"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    loadNews();
+                });
+
+                function loadNews() {
+                    fetch("get_tin_tuc.php")
+                        .then(response => response.json())
+                        .then(data => {
+                            let newsList = document.getElementById("news-list");
+                            newsList.innerHTML = "";
+
+                            data.forEach(news => {
+                                const title = news.tieu_de || "Không có tiêu đề";
+                                const description = news.mo_ta || "Không có mô tả";
+                                const content = news.noi_dung || "Nội dung không khả dụng";
+                                const image = news.hinh_anh || "default.png";
+                                const date = news.ngay_dang || "N/A";
+
+                                newsList.innerHTML += `
+                            <div class="col">
+                                <div class="card news-card shadow-sm">
+                                    <img src="${image}" class="card-img-top news-image-tin-tuc" alt="Hình ảnh tin tức">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${title}</h5>
+                                        <p class="card-text">${description.substring(0, 100)}...</p>
+                                        <p class="text-muted"><small>🕒 Ngày đăng: ${date}</small></p>
+                                        <button class="btn btn-primary btn-sm" 
+                                            onclick="showNewsDetails('${title}', '${description}', '${content}', '${image}', '${date}')" style = "background-color: #873e23; color: white !important">
+                                            Xem Chi Tiết
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                            });
+                        })
+                        .catch(error => console.error("Lỗi tải tin tức:", error));
+                }
+
+                function showNewsDetails(title, description, content, image, date) {
+                    document.getElementById("newsModalLabel").innerText = title;
+                    document.getElementById("newsDate").innerText = date;
+                    document.getElementById("newsContent").innerText = content;
+                    document.getElementById("newsImage").src = image;
+                    var newsModal = new bootstrap.Modal(document.getElementById("newsModal"));
+                    newsModal.show();
+                }
+            </script>
+        </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const newsData = [
+                    {
+                        title: "Hội thảo sách hằng năm - Đợt 1",
+                        desc: {
+                            time: "10:00 AM, 15/03/2025",
+                            location: "Thư viện Quốc gia, Hà Nội",
+                            details: "Hội thảo sách hằng năm là một sự kiện quan trọng nhằm tôn vinh văn hóa đọc và khuyến khích thói quen đọc sách trong cộng đồng. Chương trình năm nay quy tụ nhiều nhà văn, nhà nghiên cứu và chuyên gia xuất bản hàng đầu, hứa hẹn mang đến những góc nhìn mới về ngành xuất bản hiện đại. Ngoài ra, các độc giả cũng sẽ có cơ hội tham gia các buổi tọa đàm, workshop kỹ năng đọc hiệu quả, cũng như giao lưu với các tác giả nổi tiếng. Sự kiện không chỉ dành cho những người yêu sách mà còn cho các nhà xuất bản, nhà giáo dục và những ai quan tâm đến tương lai của sách.",
+                            contact: "Liên hệ: 0987 654 321"
+                        }
+                    },
+                    {
+                        title: "Ngày sách",
+                        desc: {
+                            time: "08:00 AM, 03/03/2025",
+                            location: "Nhà Văn hóa Thanh Niên, TP.HCM",
+                            details: "Ngày sách là một sự kiện thường niên được tổ chức nhằm khuyến khích thói quen đọc sách và truyền bá tri thức đến cộng đồng. Chương trình năm nay sẽ có hàng loạt hoạt động hấp dẫn như hội chợ sách giảm giá, giao lưu tác giả, giới thiệu các đầu sách mới và các buổi tọa đàm về văn học. Ngoài ra, còn có các gian hàng của nhiều nhà xuất bản nổi tiếng, giúp độc giả dễ dàng tìm kiếm và mua sắm những cuốn sách yêu thích. Đây cũng là cơ hội để những người yêu sách chia sẻ niềm đam mê và kết nối với cộng đồng yêu đọc sách.",
+                            contact: "Liên hệ: 0901 234 567"
+                        }
+                    },
+                    {
+                        title: "Gặp gỡ tác giả nổi tiếng - Mùa 11",
+                        desc: {
+                            time: "14:00 PM, 20/04/2025",
+                            location: "Cà phê sách ABC, Đà Nẵng",
+                            details: "Gặp gỡ tác giả nổi tiếng là chuỗi sự kiện được tổ chức thường niên, nơi độc giả có thể giao lưu trực tiếp với những nhà văn, nhà thơ có tầm ảnh hưởng lớn trong nền văn học Việt Nam. Mùa 11 của chương trình năm nay sẽ có sự góp mặt của nhà văn Nguyễn Nhật Ánh, một trong những tác giả được yêu thích nhất với nhiều tác phẩm để đời. Người tham gia sẽ có cơ hội lắng nghe chia sẻ của ông về quá trình sáng tác, những câu chuyện hậu trường thú vị và định hướng văn học trong tương lai. Đây cũng là dịp để độc giả đặt câu hỏi trực tiếp và nhận được chữ ký từ tác giả.",
+                            contact: "Liên hệ: 0977 123 456"
+                        }
+                    },
+                    {
+                        title: "Hội thảo sách hằng năm - Đợt 2",
+                        desc: {
+                            time: "09:30 AM, 22/06/2025",
+                            location: "Trung tâm Hội nghị Quốc gia, Hà Nội",
+                            details: "Đợt 2 của Hội thảo sách hằng năm tiếp tục mang đến những chủ đề nóng hổi về ngành xuất bản và văn hóa đọc trong thời đại số. Năm nay, sự kiện sẽ có các buổi thảo luận với các chuyên gia đến từ nhiều nước, nhằm tìm kiếm giải pháp thúc đẩy ngành xuất bản tại Việt Nam. Ngoài ra, hội thảo còn tổ chức các buổi giới thiệu sách mới và ký tặng của nhiều tác giả nổi tiếng. Đây là cơ hội không thể bỏ lỡ cho các nhà nghiên cứu, giáo viên, sinh viên và những người quan tâm đến sách.",
+                            contact: "Liên hệ: 0932 456 789"
+                        }
+                    },
+                    {
+                        title: "Gặp gỡ tác giả nổi tiếng - Mùa 12",
+                        desc: {
+                            time: "15:00 PM, 10/08/2025",
+                            location: "Nhà sách Fahasa, TP.HCM",
+                            details: "Sự kiện Gặp gỡ tác giả nổi tiếng - Mùa 12 năm nay sẽ có sự tham gia của nhà văn trẻ An Ni Bảo, tác giả của nhiều cuốn sách best-seller về phát triển bản thân. Trong buổi giao lưu, độc giả sẽ được nghe cô chia sẻ về hành trình viết lách, kinh nghiệm vượt qua khó khăn và cách để xây dựng một thói quen đọc sách hiệu quả. Ngoài ra, chương trình cũng có phần hỏi đáp trực tiếp, nơi độc giả có thể đặt câu hỏi và lắng nghe những quan điểm sâu sắc từ tác giả. Cuối chương trình, An Ni Bảo sẽ ký tặng sách cho những người tham dự.",
+                            contact: "Liên hệ: 0968 789 101"
+                        }
+                    },
+                    {
+                        title: "Gặp gỡ tác giả nổi tiếng - Mùa 13",
+                        desc: {
+                            time: "17:00 PM, 25/09/2025",
+                            location: "Cà phê sách BookLand, Cần Thơ",
+                            details: "Chuỗi sự kiện Gặp gỡ tác giả nổi tiếng bước sang mùa 13 với sự tham gia đặc biệt của nhà văn Hồ Anh Thư, tác giả của nhiều cuốn sách nổi tiếng trong thể loại tiểu thuyết lịch sử. Sự kiện lần này không chỉ là buổi giao lưu thông thường mà còn có phần tọa đàm sâu sắc về văn học lịch sử, giúp độc giả hiểu hơn về quá trình nghiên cứu và sáng tác. Bên cạnh đó, buổi gặp gỡ còn mang đến những thông tin thú vị về các dự án sách sắp tới của tác giả. Đây là cơ hội tuyệt vời để độc giả yêu thích văn học lịch sử có thể tìm hiểu và giao lưu với tác giả.",
+                            contact: "Liên hệ: 0912 345 678"
+                        }
+                    }
+                ];
+
+                const carousel = document.querySelector("#carouselExample");
+                const titleElement = document.querySelector("#news-title");
+                const descElement = document.querySelector("#news-desc");
+                const newsContainer = document.querySelector(".news-container");
+                const section = document.querySelector(".section-3");
+
+                // Hiệu ứng khi cuộn đến phần tin tức
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            newsContainer.classList.add("show");
+                        } else {
+                            newsContainer.classList.remove("show");
+                        }
+                    });
+                }, { threshold: 0.05 });
+
+                observer.observe(section);
+
+                // Xử lý sự kiện thay đổi slide
+                carousel.addEventListener("slid.bs.carousel", function (event) {
+                    const index = [...event.target.querySelectorAll(".carousel-item")].indexOf(event.relatedTarget);
+                    if (index !== -1) {
+                        titleElement.textContent = newsData[index].title;
+                        descElement.innerHTML = `
+              <strong>Thời gian:</strong> ${newsData[index].desc.time}<br>
+              <strong>Địa điểm:</strong> ${newsData[index].desc.location}<br>
+              <strong>Mô tả:</strong> ${newsData[index].desc.details}<br>
+              <strong>Thông tin liên hệ:</strong> ${newsData[index].desc.contact}
+          `;
+                    }
+                });
+            });
+        </script>
+        <!-- Thư viện AOS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+
+        <!-- Icons góc dưới bên phải -->
+        <div class="floating-icons">
+            <a href="#" class="icon-btn chat-btn">
+                <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/man-2_icon-icons.com_55041.png"
+                    alt="Cá nhân">
+            </a>
+            <a href="#" class="icon-btn balo-btn" data-bs-toggle="modal" data-bs-target="#baloModal">
+                <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/shoppaymentorderbuy-34_icon-icons.com_73865.png"
+                    alt="Balo">
+            </a>
+            <a href="#" class="icon-btn scroll-top-btn">
+                <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/arrow_circle_up_icon_155797.png"
+                    alt="Lên đầu trang">
+            </a>
+            <a href="#" class="icon-btn scroll-top-btn" data-bs-toggle="modal" data-bs-target="#chatModal">
+                <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/social_facebook_messenger_icon-icons.com_66150.png"
+                    alt="Chat">
+            </a>
+        </div>
+
+        <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="chatModalLabel">Chat với AI</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="chat-output" class="border p-3 mb-3" style="height: 250px; overflow-y: auto;"></div>
+                        <div class="input-group">
+                            <input type="text" id="chat-input" class="form-control" placeholder="Nhập tin nhắn...">
+                            <button id="sendMessage" class="btn btn-success">Gửi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const chatOutput = document.getElementById("chat-output");
+                const chatInput = document.getElementById("chat-input");
+                const sendMessage = document.getElementById("sendMessage");
+
+                sendMessage.addEventListener("click", function () {
+                    const userMessage = chatInput.value.trim();
+                    if (userMessage === "") return;
+
+                    // Hiển thị tin nhắn người dùng
+                    chatOutput.innerHTML += `<div><strong>Bạn:</strong> ${userMessage}</div>`;
+                    chatInput.value = "";
+
+                    // Gửi đến server để xử lý AI
+                    fetch("chat_ai.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: userMessage })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            chatOutput.innerHTML += `<div><strong>AI:</strong> ${data.reply}</div>`;
+                            chatOutput.scrollTop = chatOutput.scrollHeight; // Cuộn xuống tin nhắn mới nhất
+                        })
+                        .catch(error => console.error("Lỗi gửi tin nhắn:", error));
+                });
+            });
+        </script>
+
+        <!-- Modal Balo -->
+        <div class="modal fade" id="baloModal" tabindex="-1" aria-labelledby="baloModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content p-3">
+                    <div class="modal-header">
+                        <h4 class="modal-title fw-bold" id="baloModalLabel">Sách đã lưu</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul id="savedBooksList" class="list-group">
+                            <!-- Danh sách sách sẽ hiển thị ở đây -->
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal"> Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                loadSavedBooks(); // Gọi hàm tải sách khi trang tải xong
+
+                // Sự kiện khi bấm nút "Thêm vào balo"
+                document.addEventListener("click", function (event) {
+                    if (!event.target.classList.contains("btn-dark")) return;
+
+                    let modal = event.target.closest(".modal");
+                    if (!modal) return;
+
+                    let title, author, year, imageSrc;
+                    if (modal.id === "bookModal") {
+                        title = document.getElementById("bookModalLabel").innerText;
+                        author = document.getElementById("modalAuthor").innerText;
+                        year = document.getElementById("modalYear").innerText;
+                        imageSrc = document.getElementById("modalImage").src;
+                    } else if (modal.id === "hotBookModal") {
+                        title = document.getElementById("hotBookModalLabel").innerText;
+                        author = document.getElementById("hotModalAuthor").innerText;
+                        year = document.getElementById("hotModalYear").innerText;
+                        imageSrc = document.getElementById("hotModalImage").src;
+                    } else {
+                        return;
+                    }
+
+                    const savedBooksList = document.getElementById("savedBooksList");
+
+                    // ❌ Kiểm tra nếu sách đã tồn tại trong danh sách thì không thêm nữa
+                    if ([...savedBooksList.children].some(li => li.dataset.title === title)) {
+                        alert("Sách đã tồn tại trong balo!");
+                        return;
+                    }
+
+                    // ✅ Thêm sách vào danh sách hiển thị
+                    const listItem = document.createElement("li");
+                    listItem.classList.add("list-group-item", "d-flex", "align-items-center", "justify-content-between");
+                    listItem.dataset.title = title;
+
+                    listItem.innerHTML = `
+            <img src="${imageSrc}" class="rounded shadow border" style="width: 50px;">
+            <span><strong>${title}</strong> - ${author} (${year})</span>
+            <div class="saved-book-buttons">
+                <button class="btn btn-sm btn-success">📖 Đọc ngay</button>
+                <button class="btn btn-sm btn-danger">❌ Xóa</button>
+            </div>
+        `;
+                    savedBooksList.appendChild(listItem);
+
+                    alert("Sách đã được lưu vào balo!");
+
+                    // 🔥 Gửi dữ liệu lên server để lưu vào CSDL
+                    fetch("save_book.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ title, author, year, image_url: imageSrc }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === "success") {
+                                console.log("Sách đã được lưu vào CSDL!");
+                            } else {
+                                console.error("Lỗi lưu sách:", data.message);
+                            }
+                        })
+                        .catch(error => console.error("Lỗi gửi yêu cầu:", error));
+                });
+
+                // Sự kiện xóa sách khỏi danh sách
+                document.addEventListener("click", function (event) {
+                    if (!event.target.classList.contains("btn-danger")) return;
+
+                    let listItem = event.target.closest("li");
+                    if (!listItem) return;
+
+                    let title = listItem.dataset.title;
+
+                    if (!confirm(`Bạn có chắc muốn xóa sách "${title}" khỏi balo?`)) return;
+
+                    // ❌ Tránh xóa 2 lần bằng cách kiểm tra sách có tồn tại không trước khi gọi API
+                    if (!document.body.contains(listItem)) {
+                        return;
+                    }
+
+                    fetch("xoa_saved_sach.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ ten_sach: title })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                listItem.remove(); // ✅ Xóa khỏi danh sách hiển thị
+                                alert("Sách đã được xóa khỏi balo!");
+                            } else {
+                                alert("Lỗi khi xóa sách: " + data.message);
+                            }
+                        })
+                        .catch(error => console.error("Lỗi gửi yêu cầu xóa:", error));
+                });
+
+            });
+
+            // Hàm tải sách đã lưu từ CSDL
+            function loadSavedBooks() {
+                fetch("get_saved_books.php")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === "success") {
+                            const books = data.books;
+                            const savedBooksList = document.getElementById("savedBooksList");
+                            savedBooksList.innerHTML = ""; // Xóa danh sách cũ
+
+                            books.forEach(book => {
+                                const listItem = document.createElement("li");
+                                listItem.classList.add("list-group-item", "d-flex", "align-items-center", "justify-content-between");
+                                listItem.dataset.title = book.book_title;
+
+                                listItem.innerHTML = `
+                        <img src="${book.image_url}" class="rounded shadow border" style="width: 50px;">
+                        <span><strong>${book.book_title}</strong> - ${book.author} (${book.year})</span>
+                        <div class="saved-book-buttons">
+                            <button class="btn btn-sm btn-success">📖 Đọc ngay</button>
+                            <button class="btn btn-sm btn-danger">❌ Xóa</button>
+                        </div>
+                    `;
+                                savedBooksList.appendChild(listItem);
+                            });
+                        } else {
+                            console.error("Lỗi: ", data.message);
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi tải sách:", error));
+            }
+        </script>
+
+        <!-- Popup (Modal) Bootstrap -->
+        <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userModalLabel">Thông tin người dùng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Họ Tên:</strong> <span id="popup-ho-ten"></span></p>
+                        <p><strong>Email:</strong> <span id="popup-email"></span></p>
+                        <p><strong>Tài khoản:</strong> <span id="popup-username"></span></p>
+                        <p><strong>Tuổi:</strong> <span id="popup-tuoi"></span></p>
+                        <p><strong>Số điện thoại:</strong> <span id="popup-so-dien-thoai"></span></p>
+                        <p><strong>Địa chỉ:</strong> <span id="popup-dia-chi"></span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="logoutBtn">
+                            Đăng xuất
+                        </button>
+                        <button type="button" class="btn btn-primary" id="editInfoBtn">
+                            Sửa thông tin
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Sửa Thông Tin -->
+        <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editUserModalLabel">Sửa Thông Tin</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editUserForm">
+                            <div class="mb-3">
+                                <label for="editHoTen" class="form-label">Họ Tên</label>
+                                <input type="text" class="form-control" id="editHoTen" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTaiKhoan" class="form-label">Tài Khoản</label>
+                                <input type="text" class="form-control" id="editTaiKhoan" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editMatKhau" class="form-label">Mật Khẩu</label>
+                                <input type="password" class="form-control" id="editMatKhau" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTuoi" class="form-label">Tuổi</label>
+                                <input type="number" class="form-control" id="editTuoi" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editSoDienThoai" class="form-label">Số Điện Thoại</label>
+                                <input type="text" class="form-control" id="editSoDienThoai" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editDiaChi" class="form-label">Địa Chỉ</label>
+                                <input type="text" class="form-control" id="editDiaChi" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let editBtn = document.getElementById("editInfoBtn");
+
+                if (!editBtn) {
+                    console.error("Không tìm thấy nút #editInfoBtn.");
+                    return;
+                }
+
+                editBtn.addEventListener("click", function () {
+                    let hoTenElem = document.getElementById("popup-ho-ten");
+                    let emailElem = document.getElementById("popup-email");
+                    let usernameElem = document.getElementById("popup-username");
+                    let tuoiElem = document.getElementById("popup-tuoi");
+                    let soDienThoaiElem = document.getElementById("popup-so-dien-thoai");
+                    let diaChiElem = document.getElementById("popup-dia-chi");
+
+                    if (!hoTenElem || !emailElem || !usernameElem || !tuoiElem || !soDienThoaiElem || !diaChiElem) {
+                        console.error("Không tìm thấy một trong các phần tử thông tin người dùng.");
+                        return;
+                    }
+
+                    let editHoTen = document.getElementById("editHoTen");
+                    let editTaiKhoan = document.getElementById("editTaiKhoan");
+                    let editMatKhau = document.getElementById("editMatKhau");
+                    let editTuoi = document.getElementById("editTuoi");
+                    let editEmail = document.getElementById("editEmail");
+                    let editSoDienThoai = document.getElementById("editSoDienThoai");
+                    let editDiaChi = document.getElementById("editDiaChi");
+
+                    if (!editHoTen || !editTaiKhoan || !editMatKhau || !editTuoi || !editEmail || !editSoDienThoai || !editDiaChi) {
+                        console.error("Không tìm thấy một trong các phần tử form chỉnh sửa.");
+                        return;
+                    }
+
+                    editHoTen.value = hoTenElem.textContent.trim();
+                    editTaiKhoan.value = usernameElem.textContent.trim();
+                    editMatKhau.value = "";
+                    editTuoi.value = tuoiElem.textContent.trim();
+                    editEmail.value = emailElem.textContent.trim();
+                    editSoDienThoai.value = soDienThoaiElem.textContent.trim();
+                    editDiaChi.value = diaChiElem.textContent.trim();
+
+                    let editModalElem = document.getElementById("editUserModal");
+                    if (!editModalElem) {
+                        console.error("Không tìm thấy modal #editUserModal.");
+                        return;
+                    }
+
+                    let editModal = new bootstrap.Modal(editModalElem);
+                    editModal.show();
+                });
+
+                let editUserForm = document.getElementById("editUserForm");
+                if (!editUserForm) {
+                    console.error("Không tìm thấy form #editUserForm.");
+                    return;
+                }
+
+                editUserForm.addEventListener("submit", function (event) {
+                    event.preventDefault();
+
+                    let updatedUserInfo = {
+                        taiKhoan: document.getElementById("editTaiKhoan").value.trim(),
+                        matKhau: document.getElementById("editMatKhau").value.trim(),
+                        hoTen: document.getElementById("editHoTen").value.trim(),
+                        tuoi: document.getElementById("editTuoi").value.trim(),
+                        email: document.getElementById("editEmail").value.trim(),
+                        soDienThoai: document.getElementById("editSoDienThoai").value.trim(),
+                        diaChi: document.getElementById("editDiaChi").value.trim(),
+                    };
+
+                    console.log("Dữ liệu gửi đi:", updatedUserInfo);
+
+                    fetch("suathongtin.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(updatedUserInfo),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("Phản hồi từ server:", data);
+                            if (data.success) {
+                                alert("Cập nhật thông tin thành công!");
+                                // Cập nhật nội dung modal ngay lập tức
+                                document.getElementById("popup-ho-ten").innerText = updatedUserInfo.hoTen;
+                                document.getElementById("popup-email").innerText = updatedUserInfo.email;
+                                document.getElementById("popup-username").innerText = updatedUserInfo.taiKhoan;
+                                document.getElementById("popup-tuoi").innerText = updatedUserInfo.tuoi;
+                                document.getElementById("popup-so-dien-thoai").innerText = updatedUserInfo.soDienThoai;
+                                document.getElementById("popup-dia-chi").innerText = updatedUserInfo.diaChi;
+
+                                // Cập nhật cookie để giữ thông tin mới
+                                document.cookie = `hoTen=${encodeURIComponent(updatedUserInfo.hoTen)}; path=/`;
+                                document.cookie = `email=${encodeURIComponent(updatedUserInfo.email)}; path=/`;
+                                document.cookie = `username=${encodeURIComponent(updatedUserInfo.taiKhoan)}; path=/`;
+                                document.cookie = `tuoi=${encodeURIComponent(updatedUserInfo.tuoi)}; path=/`;
+                                document.cookie = `soDienThoai=${encodeURIComponent(updatedUserInfo.soDienThoai)}; path=/`;
+                                document.cookie = `diaChi=${encodeURIComponent(updatedUserInfo.diaChi)}; path=/`;
+                            } else {
+                                alert("Lỗi: " + data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Lỗi khi gửi yêu cầu:", error);
+                            alert("Có lỗi xảy ra khi cập nhật. Vui lòng thử lại.");
+                        });
+                });
+            });
+
+
+            // Đợi DOM load trước khi chạy script
+            document.addEventListener("DOMContentLoaded", function () {
+                // Hàm lấy giá trị từ cookie
+                function getCookie(name) {
+                    let cookies = document.cookie.split("; ");
+                    for (let i = 0; i < cookies.length; i++) {
+                        let parts = cookies[i].split("=");
+                        if (parts[0] === name) {
+                            return decodeURIComponent(parts[1]);
+                        }
+                    }
+                    return ""; // Trả về chuỗi rỗng nếu không tìm thấy
+                }
+
+                // Hiển thị thông tin người dùng khi mở modal
+                let chatButton = document.querySelector(".chat-btn");
+                if (chatButton) {
+                    chatButton.addEventListener("click", function () {
+                        let hoTenEl = document.getElementById("popup-ho-ten");
+                        let emailEl = document.getElementById("popup-email");
+                        let usernameEl = document.getElementById("popup-username");
+                        let tuoiEl = document.getElementById("popup-tuoi");
+                        let soDienThoaiEl = document.getElementById("popup-so-dien-thoai");
+                        let diaChiEl = document.getElementById("popup-dia-chi");
+
+                        // Kiểm tra xem các phần tử có tồn tại trước khi gán giá trị
+                        if (hoTenEl && emailEl && usernameEl && tuoiEl && soDienThoaiEl && diaChiEl) {
+                            hoTenEl.innerText = getCookie("hoTen") || "Chưa đăng nhập";
+                            emailEl.innerText = getCookie("email") || "Chưa đăng nhập";
+                            usernameEl.innerText = getCookie("username") || "Chưa đăng nhập";
+                            tuoiEl.innerText = getCookie("tuoi") || "Chưa có dữ liệu";
+                            soDienThoaiEl.innerText = getCookie("soDienThoai") || "Chưa có dữ liệu";
+                            diaChiEl.innerText = getCookie("diaChi") || "Chưa có dữ liệu";
+                        } else {
+                            console.error("Không tìm thấy phần tử hiển thị thông tin người dùng.");
+                        }
+                    });
+                } else {
+                    console.error("Không tìm thấy nút mở modal. Kiểm tra lại class.");
+                }
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+                let logoutBtn = document.getElementById("logoutBtn");
+
+                if (!logoutBtn) {
+                    console.error("Không tìm thấy nút đăng xuất.");
+                    return;
+                }
+
+                logoutBtn.addEventListener("click", function () {
+                    if (!document.cookie.includes("username=")) {
+                        alert("Bạn chưa đăng nhập!");
+                        return;
+                    }
+
+                    // Hàm xóa cookie
+                    function deleteCookie(name) {
+                        document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                        document.cookie = name + "=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                    }
+
+                    // Xóa danh sách cookie liên quan đến tài khoản
+                    ["username", "hoTen", "email", "tuoi", "soDienThoai", "diaChi"].forEach(deleteCookie);
+
+                    // Log để kiểm tra
+                    console.log("Cookies sau khi xóa:", document.cookie);
+
+                    // Cập nhật giao diện (tải lại trang)
+                    alert("Bạn đã đăng xuất thành công!");
+                    window.location.reload();
+                });
+            });
+
+
+
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelector(".chat-btn").addEventListener("click", function (event) {
+                    event.preventDefault(); // Ngăn tải lại trang
+                    var myModal = new bootstrap.Modal(document.getElementById('userModal'));
+                    myModal.show();
+                });
+            });
+        </script>
+    </main>
+    <!-- Footer -->
+    <footer class="footer" style="background-color:#873e23; height: 200px;">
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,519 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+
+}
+
+/*loading*/
+#loading {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    background: #1e6cc7 url('https://i2.wp.com/codemyui.com/wp-content/uploads/2015/11/pure-css-bookshelf-loading-animation.gif?fit=880%2C440&ssl=1') no-repeat center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+body.loading #loading {
+    display: block;
+}
+
+body.loaded #loading {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* HEADER */
+header {
+    color: white;
+    position: fixed;
+    top: 70px;
+    width: 100%;
+    z-index: 1000;
+    font-size: 16px;
+    transition: top 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header-fixed {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+
+
+
+/* Main Content */
+/* Main content container */
+.main-content {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/*Banner*/
+#banner {
+    background-image: url(https://i.pinimg.com/736x/78/de/eb/78deebdfc64cbf493fa03169e26b44ae.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    color: white;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.text-content h3 {
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.text-content h1 {
+    font-size: 50px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-family: "Georgia", serif;
+}
+
+.line {
+    width: 100px;
+    height: 3px;
+    background-color: white;
+    margin: 10px auto 0;
+}
+
+
+/* Section 1 */
+.news {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.news-1 {
+    width: 55%;
+    margin-right: 30px;
+}
+
+.section-3 {
+    margin: 20px;
+    background: #21130d;
+    overflow: hidden;
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    min-height: 580px;
+    height: auto;
+}
+
+.tin-tuc {
+    width: 45%;
+    background-color: #063970;
+    padding: 20px;
+    text-align: center;
+}
+
+
+
+/* Tiêu đề tin tức */
+.news-title {
+    text-align: center;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Container chứa ảnh và mô tả */
+.news-container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+/* Khi xuất hiện trên màn hình */
+.news-container.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Khung carousel */
+.carousel {
+    flex: 2;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+/* Hình ảnh trong carousel */
+.news-image {
+    width: 100%;
+    max-width: 1200px;
+    height: auto;
+    border-radius: 20px;
+    object-fit: cover;
+    opacity: 0;
+    transform: translateX(-100px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+/* Mô tả tin tức */
+.news-caption {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+    min-width: 300px;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+/* Khi cuộn đến phần tin tức */
+.news-container.show .news-image {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.news-container.show .news-caption {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Tiêu đề trong phần mô tả */
+.news-caption h5 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+/* Nội dung mô tả */
+.news-caption p {
+    font-size: 16px;
+    color: #333;
+}
+
+/* Đáp ứng màn hình nhỏ */
+@media (max-width: 768px) {
+    .news-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .news-caption {
+        min-width: 100%;
+        text-align: center;
+    }
+
+    .news-image {
+        max-width: 100%;
+    }
+}
+
+
+/* Tin tức */
+.news-section {
+    padding: 50px;
+    background: #fff;
+  }
+  
+  .news-card {
+    height: 100%;
+    border: 1px solid #ddd;
+    transition: 0.3s;
+  }
+  
+  .news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .news-image {
+    height: 180px;
+    object-fit: cover;
+  }
+  
+  .modal-news-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.5);
+    /* Đổ bóng cho ảnh trong modal */
+  }
+
+
+/* Container chứa ảnh và mô tả */
+.news-container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+/* Khi xuất hiện trên màn hình */
+.news-container.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Khung carousel */
+.carousel {
+    flex: 2;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+/* Hình ảnh trong carousel */
+.news-image {
+    width: 100%;
+    max-width: 1200px;
+    height: auto;
+    border-radius: 20px;
+    object-fit: cover;
+    opacity: 0;
+    transform: translateX(-100px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+/* Mô tả tin tức */
+.news-caption {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+    min-width: 300px;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+/* Khi cuộn đến phần tin tức */
+.news-container.show .news-image {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.news-container.show .news-caption {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Tiêu đề trong phần mô tả */
+.news-caption h5 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+/* Nội dung mô tả */
+.news-caption p {
+    font-size: 16px;
+    color: #333;
+}
+
+/* Đáp ứng màn hình nhỏ */
+@media (max-width: 768px) {
+    .news-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .news-caption {
+        min-width: 100%;
+        text-align: center;
+    }
+
+    .news-image {
+        max-width: 100%;
+    }
+}
+
+/*******************Portfolio******************/
+.section-heading {
+    margin-top: 50px;
+}
+
+/* Tạo khoảng cách giữa các ảnh */
+#portfolio .col-md-4 {
+    padding: 15px;
+}
+
+/* Tạo hiệu ứng đẹp hơn cho hình ảnh */
+.portfolio-thumb {
+    height: 280px;
+    max-width: 100%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.portfolio-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+
+.portfolio-thumb:hover img {
+    transform: scale(1.05);
+}
+
+.portfolio-overlay {
+    opacity: 0;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    text-align: center;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.portfolio-thumb:hover .portfolio-overlay {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.portfolio-overlay h2 {
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    border-bottom: 2px solid white;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.portfolio-overlay p {
+    color: white;
+    font-size: 15px;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.portfolio-overlay a {
+    color: white;
+    font-size: 24px;
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+}
+
+.old-price {
+    text-decoration: line-through;
+    /* Gạch ngang */
+    color: rgb(255, 251, 0);
+    /* Làm mờ giá cũ */
+}
+
+.new-price {
+    color: red;
+    /* Màu nổi bật */
+    font-weight: bold;
+    /* Chữ đậm */
+    font-size: 1.2em;
+    /* To hơn */
+}
+
+
+/*review*/
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.025); /* Phóng to nhẹ */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Tăng bóng đổ */
+}
+
+
+/*********** icon ***************/
+/* Định vị icon cố định */
+.floating-icons {
+    position: fixed;
+    bottom: 20px;
+    right: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* Tăng khoảng cách giữa các icon */
+}
+
+.icon-btn {
+    width: 85px;
+    /* Tăng kích thước */
+    height: 85px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 3px solid black;
+    /* Viền màu đen, nhỏ hơn */
+}
+
+.icon-btn:hover {
+    transform: scale(1.15);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+.icon-btn img {
+    width: 40px;
+    /* Tăng kích thước icon */
+    height: 40px;
+}
+
+/*********** Footer **************/
+
+
+.sticky {
+    position: fixed !important;
+    top: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.815);
+    z-index: 9999;
+    transition: all 0.2s ease;
+    color: #000000;
+}
+
+.sticky .nav-link {
+    color: rgb(0, 0, 0) !important;
+    /* Đảm bảo màu chữ của menu */
+}
+
+.sticky .navbar-brand {
+    color: rgb(255, 255, 255) !important;
+}

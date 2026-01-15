@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Thư viện Online</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap JavaScript (Popper.js đi kèm) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script>
+
+        function resetDisplay() {
+            console.log("resetDisplay() được gọi!");
+            // Xóa nội dung ô tìm kiếm
+            document.getElementById("searchInput").value = "";
+            // Đưa bộ lọc về giá trị mặc định
+            document.getElementById("filterType").selectedIndex = 0;
+            // Xóa dữ liệu hiện tại trong bảng
+            const bookTableBody = document.getElementById("bookTableBody");
+            bookTableBody.innerHTML = "";
+            // Gọi hàm fetchBookData để tải lại dữ liệu sách
+            fetchBooks();
+        }
+
+        // Hiển thị thông tin vào bảng
+        document.addEventListener("DOMContentLoaded", function () {
+            fetchBooks();
+        });
+
+        function fetchBooks() {
+            fetch("quanlysach.php")
+                .then(response => response.json())
+                .then(books => {
+                    const bookTableBody = document.getElementById("bookTableBody");
+                    bookTableBody.innerHTML = ""; // Xóa dữ liệu cũ
+
+                    if (!Array.isArray(books)) {
+                        console.error("Lỗi: Dữ liệu không hợp lệ", books);
+                        bookTableBody.innerHTML = "<tr><td colspan='10'>Lỗi khi tải dữ liệu.</td></tr>";
+                        return;
+                    }
+
+                    books.forEach(book => {
+                        const row = document.createElement("tr");
+
+                        row.innerHTML = `
+                    <td>${book.id_sach}</td>
+                    <td>${book.ten_sach}</td>
+                    <td>${book.tac_gia}</td>
+                    <td>${book.nam_xuat_ban}</td>
+                    <td>${book.so_luong}</td>
+                    <td>${book.so_luot_xem}</td>
+                    <td>${book.id_chu_de}</td>
+                    <td><img src="${book.hinh_anh}" alt="Ảnh sách" width="50"></td>
+                    <td>${book.mo_ta_sach}</td>
+                    <td style="background: #76b5c5">
+                        <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" 
+                            data-bs-target="#editBookModal" onclick="setEditBook(${book.id_sach})">
+                            Sửa
+                        </button>
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+        data-bs-target="#deleteBookModal"
+        onclick="setDeleteBook(this.getAttribute('data-id'))"
+        data-id="${book.id_sach}">
+    Xóa
+</button>
+
+                    </td>
+                `;
+
+                        bookTableBody.appendChild(row);
+                    });
+
+                    console.log("Đã tải xong danh sách sách.");
+                })
+                .catch(error => {
+                    console.error("Lỗi khi tải dữ liệu:", error);
+                    document.getElementById("bookTableBody").innerHTML = "<tr><td colspan='10'>Lỗi kết nối đến server.</td></tr>";
+                });
+        }
+
+
+        // Lấy chủ đề
+        document.addEventListener("DOMContentLoaded", () => {
+            // Gọi API để lấy danh sách chủ đề
+            fetch("get_chude.php")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Dữ liệu nhận được:", data); // Debug
+
+                    // Lấy tất cả các select liên quan đến chủ đề
+                    let selectElements = document.querySelectorAll("#idChuDe, #editIdChuDe");
+
+                    selectElements.forEach(selectChuDe => {
+                        if (!Array.isArray(data)) {
+                            console.error("Lỗi: API không trả về mảng JSON hợp lệ!");
+                            selectChuDe.innerHTML = `<option value="">Dữ liệu lỗi</option>`;
+                            return;
+                        }
+
+                        if (data.length === 0) {
+                            selectChuDe.innerHTML = `<option value="">Không có chủ đề</option>`;
+                            return;
+                        }
+
+                        // Cấu hình các option cho select
+                        selectChuDe.innerHTML = `<option value="">Chọn chủ đề</option>`;
+                        data.forEach(chuDe => {
+                            let option = document.createElement("option");
+                            option.value = chuDe.id_chu_de;
+                            option.textContent = chuDe.ten_chu_de;
+                            selectChuDe.appendChild(option);
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error("Lỗi khi tải chủ đề:", error);
+                    // Nếu lỗi, hiển thị thông báo trên cả hai select
+                    document.querySelectorAll("#idChuDe, #editIdChuDe").forEach(selectChuDe => {
+                        selectChuDe.innerHTML = `<option value="">Không thể tải chủ đề</option>`;
+                    });
+                });
+        });
+
+
+        // Xóa dữ liệu trong các trường
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("DOM Loaded, initializing event listeners for book modals...");
+
+            // Hàm reset các trường trong form của một modal cụ thể
+            function resetFormFields(modalId, fieldIds) {
+                console.log(`Resetting form fields for modal: ${modalId}`);
+                fieldIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        if (el.tagName === "SELECT") {
+                            el.selectedIndex = 0; // Reset dropdown về trạng thái mặc định
+                        } else {
+                            el.value = "";
+                        }
+                    } else {
+                        console.warn(`Không tìm thấy element với id "${id}"`);
+                    }
+                });
+            }
+
+            // Hàm thiết lập sự kiện cho một modal cụ thể
+            function setupModalEventHandlers(modalId, fieldIds, clearBtnId) {
+                // Gán sự kiện cho nút "Xóa thông tin" trong modal
+                const clearBtn = document.getElementById(clearBtnId);
+                if (clearBtn) {
+                    console.log(`Found '${clearBtnId}' button, adding event listener...`);
+                    clearBtn.addEventListener("click", () => {
+                        console.log(`Clear button clicked for modal: ${modalId}`);
+                        resetFormFields(modalId, fieldIds);
+                    });
+                } else {
+                    console.error(`Không tìm thấy nút '${clearBtnId}'. Kiểm tra lại HTML.`);
+                }
+
+                // Reset form khi modal bị đóng
+                const modalEl = document.getElementById(modalId);
+                if (modalEl) {
+                    modalEl.addEventListener("hidden.bs.modal", () => {
+                        console.log(`Modal hidden event triggered for: ${modalId}`);
+                        resetFormFields(modalId, fieldIds);
+                    });
+                } else {
+                    console.error(`Không tìm thấy modal với id '${modalId}'.`);
+                }
+            }
+
+            // Cấu hình cho các modal liên quan đến sách
+            const bookModalConfigs = [
+                {
+                    modalId: "bookModal",
+                    fieldIds: ["idSach", "tenSach", "tacGia", "namXuatBan", "soLuong", "idChuDe", "hinhAnh", "moTaSach"],
+                    clearBtnId: "clearBook"
+                },
+                {
+                    modalId: "searchBookModal",
+                    fieldIds: ["searchMaSach"],
+                    clearBtnId: "clearSearchButton"
+                }
+            ];
+
+            // Khởi tạo sự kiện cho từng modal
+            bookModalConfigs.forEach(config => {
+                setupModalEventHandlers(config.modalId, config.fieldIds, config.clearBtnId);
+            });
+        });
+
+
+
+
+        //Thêm sách
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("saveBook").addEventListener("click", async () => {
+                const formData = new FormData();
+                formData.append("idSach", document.getElementById("idSach").value.trim());
+                formData.append("tenSach", document.getElementById("tenSach").value.trim());
+                formData.append("tacGia", document.getElementById("tacGia").value.trim());
+                formData.append("namXuatBan", document.getElementById("namXuatBan").value.trim());
+                formData.append("soLuong", document.getElementById("soLuong").value.trim());
+                formData.append("idChuDe", document.getElementById("idChuDe").value.trim());
+                formData.append("moTaSach", document.getElementById("moTaSach").value.trim());
+                formData.append("hinhAnh", document.getElementById("hinhAnh").files[0]);
+
+                console.log("Dữ liệu FormData gửi lên:", Array.from(formData.entries())); // Debug
+
+                try {
+                    const response = await fetch("themsach.php", {
+                        method: "POST",
+                        body: formData,
+                    });
+                    const data = await response.json();
+                    console.log("Kết quả từ server:", data); // Debug
+                    if (data.success) {
+                        alert("Thêm sách thành công!");
+                        location.reload();
+                    } else {
+                        alert("Lỗi: " + data.error);
+                    }
+                } catch (error) {
+                    console.error("Lỗi khi gửi dữ liệu:", error);
+                }
+            });
+        });
+
+
+
+        /*SỬa sách*/
+        function setEditBook(idSach) {
+            fetch("quanlysach.php")
+                .then(response => response.json())
+                .then(books => {
+                    console.log("Dữ liệu nhận được:", books); // Kiểm tra dữ liệu trong Console
+
+                    const book = books.find(book => book.id_sach == idSach);
+                    if (!book) {
+                        console.error("Không tìm thấy sách với ID:", idSach);
+                        return;
+                    }
+
+                    // Điền thông tin sách vào modal
+                    document.getElementById("editIdSach").value = book.id_sach;
+                    document.getElementById("editTenSach").value = book.ten_sach;
+                    document.getElementById("editTacGia").value = book.tac_gia;
+                    document.getElementById("editNamXuatBan").value = book.nam_xuat_ban;
+                    document.getElementById("editSoLuong").value = book.so_luong;
+                    document.getElementById("editSoLuotXem").value = book.so_luot_xem;
+                    document.getElementById("editIdChuDe").value = book.id_chu_de;
+                    document.getElementById("editMoTaSach").value = book.mo_ta_sach;
+
+                    // Xử lý hình ảnh
+                    const previewImage = document.getElementById("previewHinhAnh");
+                    if (book.hinh_anh) {
+                        if (book.hinh_anh.startsWith("http") || book.hinh_anh.startsWith("/")) {
+                            previewImage.src = book.hinh_anh; // Nếu là đường dẫn
+                        } else {
+                            previewImage.src = book.hinh_anh; // Nếu là Base64
+                        }
+                        previewImage.style.display = "block";
+                    } else {
+                        previewImage.style.display = "none";
+                    }
+                })
+                .catch(error => console.error("Lỗi khi tải dữ liệu sách:", error));
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            function resetEditBookForm() {
+                document.getElementById("editBookForm")?.reset();
+                document.getElementById("previewHinhAnh").style.display = "none";
+            }
+
+            document.getElementById("clearEditBook")?.addEventListener("click", resetEditBookForm);
+            document.getElementById("editBookModal")?.addEventListener("hidden.bs.modal", resetEditBookForm);
+
+            document.getElementById("saveEditBook")?.addEventListener("click", function (event) {
+                event.preventDefault(); // Ngăn chặn hành vi mặc định
+
+                const formData = new FormData();
+                formData.append("idSach", document.getElementById("editIdSach").value.trim());
+                formData.append("tenSach", document.getElementById("editTenSach").value.trim());
+                formData.append("tacGia", document.getElementById("editTacGia").value.trim());
+                formData.append("namXuatBan", document.getElementById("editNamXuatBan").value.trim());
+                formData.append("soLuong", document.getElementById("editSoLuong").value.trim());
+                formData.append("soLuotXem", document.getElementById("editSoLuotXem").value.trim());
+                formData.append("idChuDe", document.getElementById("editIdChuDe").value.trim());
+                formData.append("moTaSach", document.getElementById("editMoTaSach").value.trim());
+
+                const hinhAnhFile = document.getElementById("editHinhAnhFile").files[0];
+
+                if (hinhAnhFile) {
+                    console.log("🖼 Đang gửi file ảnh:", hinhAnhFile.name); // Kiểm tra file có được gửi không
+                    formData.append("hinhAnh", hinhAnhFile);
+                } else {
+                    console.log("⚠ Không có file ảnh nào được chọn!");
+                }
+
+                fetch("suasach.php", {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(response => response.text()) // Đọc thô phản hồi
+                    .then(text => {
+                        console.log("🔍 Server Response:", text); // Log kết quả nhận được
+                        try {
+                            return JSON.parse(text); // Chuyển thành JSON
+                        } catch (error) {
+                            throw new Error("❌ Server không trả về JSON hợp lệ!");
+                        }
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert("✅ Cập nhật sách thành công!");
+                            location.reload();
+                        } else {
+                            alert("❌ Cập nhật thất bại: " + (data.error || "Lỗi không xác định!"));
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert("❌ Lỗi kết nối đến server hoặc lỗi JSON!");
+                    });
+            });
+
+        });
+
+
+
+        /* Xóa sách */
+        document.addEventListener("DOMContentLoaded", function () {
+            function setDeleteBook(idSach) {
+                console.log("Sách cần xóa:", idSach);
+
+                // Kiểm tra input ẩn lưu ID sách
+                const deleteInput = document.getElementById("deleteIdSach");
+                if (deleteInput) {
+                    deleteInput.value = idSach;
+                } else {
+                    console.error("Không tìm thấy input ẩn #deleteIdSach.");
+                }
+            }
+
+            // Xử lý sự kiện khi nhấn "Xác nhận xóa"
+            document.getElementById("confirmDeleteBook").addEventListener("click", function () {
+                const deleteInput = document.getElementById("deleteIdSach");
+                const idSach = deleteInput ? deleteInput.value.trim() : "";
+
+                if (!idSach) {
+                    alert("Lỗi: Không tìm thấy mã sách cần xóa!");
+                    return;
+                }
+
+                if (!confirm("Bạn có chắc chắn muốn xóa sách này?")) {
+                    return;
+                }
+
+                fetch("xoasach.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ maSach: idSach }) // Đổi từ idSach thành maSach
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Xóa sách thành công!");
+                            location.reload();
+                        } else {
+                            alert("Lỗi: " + data.error);
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi xóa sách:", error));
+            });
+
+            // Đưa setDeleteBook vào phạm vi toàn cục để gọi từ HTML
+            window.setDeleteBook = setDeleteBook;
+        });
+
+
+
+
+        // Tìm kiếm sách
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchBookButton = document.getElementById("searchBookButton");
+            const clearSearchButton = document.getElementById("clearSearchButton");
+            const searchInput = document.getElementById("searchMaSach");
+            const searchResult = document.getElementById("searchResult");
+
+            // Sự kiện cho nút Tìm kiếm
+            searchBookButton.addEventListener("click", function () {
+                const maSach = searchInput.value.trim();
+
+                if (!maSach) {
+                    alert("Vui lòng nhập mã sách!");
+                    return;
+                }
+
+                fetch("timkiemsach.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id_sach: maSach }) // Cập nhật tên biến theo bảng CSDL mới
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success || !data.book) {
+                            searchResult.innerHTML = `<p class="text-danger">${data.error || "Không tìm thấy sách!"}</p>`;
+                        } else {
+                            const book = data.book;
+                            searchResult.innerHTML = `
+                        <table class="table table-bordered mt-3">
+                            <tr><th>Mã Sách</th><td>${book.id_sach || "Không có dữ liệu"}</td></tr>
+                            <tr><th>Tên Sách</th><td>${book.ten_sach || "Không có dữ liệu"}</td></tr>
+                            <tr><th>Tác Giả</th><td>${book.tac_gia || "Không có dữ liệu"}</td></tr>
+                            <tr><th>Năm Xuất Bản</th><td>${book.nam_xuat_ban || "Không có dữ liệu"}</td></tr>
+                            <tr><th>Số Lượng</th><td>${book.so_luong || "Không có dữ liệu"}</td></tr>
+                            <tr><th>Số Lượt Xem</th><td>${book.so_luot_xem || "Không có dữ liệu"}</td></tr>
+                            <tr><th>Id Chủ Đề</th><td>${book.id_chu_de || "Không có dữ liệu"}</td></tr>
+                            <tr><th>Hình Ảnh</th>
+                                <td>
+                                    ${book.hinh_anh
+                                    ? `<img src="${book.hinh_anh}" alt="Hình ảnh sách" width="100">`
+                                    : "Không có dữ liệu"}
+                                </td>
+                            </tr>
+                            <tr><th>Mô Tả Sách</th><td>${book.mo_ta_sach || "Không có dữ liệu"}</td></tr>
+                        </table>
+                    `;
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi tìm kiếm sách:", error));
+            });
+
+            // Sự kiện cho nút Xóa thông tin (Clear)
+            clearSearchButton.addEventListener("click", function () {
+                searchInput.value = "";
+                searchResult.innerHTML = "";
+                console.log("Thông tin tìm kiếm đã được xóa.");
+            });
+        });
+
+
+
+        function fetchFilteredBooks() {
+            const keyword = document.getElementById("searchInput").value.trim();
+            const filterType = document.getElementById("filterType").value;
+            const bookTableBody = document.getElementById("bookTableBody");
+
+            fetch("locsach.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ keyword, filterType })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    bookTableBody.innerHTML = ""; // Xóa dữ liệu cũ
+
+                    if (!data.success || !Array.isArray(data.books)) {
+                        bookTableBody.innerHTML = "<tr><td colspan='10'>Lỗi khi tải dữ liệu.</td></tr>";
+                        console.error("Lỗi từ server:", data.error || "Dữ liệu không hợp lệ!");
+                        return;
+                    }
+
+                    const books = data.books;
+                    if (books.length === 0) {
+                        bookTableBody.innerHTML = "<tr><td colspan='10'>Không tìm thấy kết quả.</td></tr>";
+                        return;
+                    }
+
+                    let rowsHTML = "";
+                    books.forEach(book => {
+                        const formattedPrice = new Intl.NumberFormat("vi-VN").format(book.gia || 0) + " VND";
+                        const imageHTML = book.hinh_anh
+                            ? `<img src="${book.hinh_anh}" alt="Ảnh sách" width="50">`
+                            : "Không có ảnh";
+                        const description = book.mo_ta_sach ? book.mo_ta_sach : "Không có mô tả";
+
+                        rowsHTML += `
+                    <tr>
+                        <td>${book.id_sach}</td>
+                        <td>${book.ten_sach}</td>
+                        <td>${book.tac_gia}</td>
+                        <td>${book.nam_xuat_ban}</td>
+                        <td>${book.so_luong}</td>
+                        <td>${book.so_luot_xem}</td>
+                        <td>${book.id_chu_de}</td>
+                        <td>${imageHTML}</td>
+                        <td>${description}</td>
+                        <td style="background: #76b5c5">
+                            <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" 
+                                data-bs-target="#editBookModal" onclick="setEditBook(${book.id_sach})">
+                                Sửa
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#deleteBookModal"
+                                onclick="setDeleteBook(${book.id_sach})">
+                                Xóa
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                    });
+
+                    bookTableBody.innerHTML = rowsHTML;
+                })
+                .catch(error => {
+                    bookTableBody.innerHTML = "<tr><td colspan='10'>Lỗi khi tải dữ liệu.</td></tr>";
+                    console.error("Lỗi khi tải dữ liệu:", error);
+                });
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchForm = document.getElementById("searchForm");
+            if (searchForm) {
+                searchForm.addEventListener("submit", function (event) {
+                    event.preventDefault(); // Ngăn reload trang
+                    fetchFilteredBooks();
+                });
+            }
+        });
+
+
+        //COde xuất Excel
+        async function exportToExcel() {
+            let fileName = prompt("Nhập tên file (không cần .xlsx):", "Book_List");
+            if (!fileName) return;
+
+            let table = document.querySelector("table");
+            let workbook = new ExcelJS.Workbook();
+            let worksheet = workbook.addWorksheet("Books");
+
+            let rows = table.querySelectorAll("tr");
+
+            for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+                let row = rows[rowIndex];
+                let rowData = [];
+                let cells = row.querySelectorAll("th, td");
+
+                for (let colIndex = 0; colIndex < cells.length - 1; colIndex++) { // Loại bỏ cột cuối (Hành động)
+                    let cell = cells[colIndex];
+                    let imgTag = cell.querySelector("img");
+
+                    if (imgTag) {
+                        try {
+                            let base64 = await getBase64Image(imgTag);
+                            let imageId = workbook.addImage({
+                                base64: base64,
+                                extension: "png",
+                            });
+
+                            worksheet.addImage(imageId, {
+                                tl: { col: colIndex, row: rowIndex },
+                                ext: { width: 50, height: 50 },
+                            });
+
+                            rowData.push(""); // Giữ chỗ cho ảnh
+                        } catch (error) {
+                            console.error("Lỗi khi tải ảnh:", error);
+                        }
+                    } else {
+                        rowData.push(cell.innerText);
+                    }
+                }
+
+                worksheet.addRow(rowData);
+            }
+
+            // Xuất file Excel
+            const buffer = await workbook.xlsx.writeBuffer();
+            const blob = new Blob([buffer], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+
+            if (window.showSaveFilePicker) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: `${fileName}.xlsx`,
+                        types: [{ description: "Excel File", accept: { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"] } }],
+                    });
+
+                    const writable = await handle.createWritable();
+                    await writable.write(blob);
+                    await writable.close();
+                    alert("Xuất file thành công!");
+                    return;
+                } catch (err) {
+                    console.error("Lỗi khi lưu file:", err);
+                }
+            }
+
+            let link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `${fileName}.xlsx`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Chuyển ảnh thành Base64
+        function getBase64Image(img) {
+            return new Promise((resolve, reject) => {
+                let canvas = document.createElement("canvas");
+                let ctx = canvas.getContext("2d");
+                let imgElement = new Image();
+                imgElement.crossOrigin = "Anonymous";
+                imgElement.src = img.src;
+
+                imgElement.onload = function () {
+                    canvas.width = imgElement.naturalWidth;
+                    canvas.height = imgElement.naturalHeight;
+                    ctx.drawImage(imgElement, 0, 0);
+                    let dataURL = canvas.toDataURL("image/png").split(",")[1];
+                    resolve(dataURL);
+                };
+
+                imgElement.onerror = function () {
+                    reject("Không thể tải ảnh.");
+                };
+            });
+        }
+
+
+    </script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+
+                <!-- Menu chính -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://short.com.vn/VSYd">Quản lý người
+                            dùng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-sach/quanlysach.html">Quản
+                            lý sách</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-tintuc/quanlytintuc.html">Quản
+                            lý tin tức</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-chude/quanlychude.html">Quản
+                            lý chủ đề</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Lienhe-hotro/lienhe_hotro.html">Liên
+                            hệ hỗ trợ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Thongke/thongke.html">Thống
+                            kê</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/BaoCao/baocao.html">Báo
+                            cáo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-chude/logout.php">Đăng
+                            xuất</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <style>
+            body {
+                background-color: #873e23;
+                /* Màu nền mong muốn */
+            }
+
+            .table {
+                background-color: white !important;
+                /* Giữ màu trắng cho bảng */
+            }
+        </style>
+        <div class="container mt-5" style="max-width: 2200px !important;">
+            <div class="container mt-4" style="margin-bottom: -10px;">
+                <!-- Các nút chức năng -->
+                <div class="mb-3 d-flex justify-content-start">
+                    <h2 class="text-center" style="margin-right: 100px; color: white;">Quản lý sách</h2>
+                    <button class="btn btn-primary me-2" data-bs-toggle="modal"
+                        data-bs-target="#bookModal">Thêm</button>
+                    <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#searchBookModal">Tìm
+                        kiếm</button>
+                    <button class="btn btn-warning me-2" type="button" onclick="resetDisplay()">Reset</button>
+
+                    <!-- Giao diện -->
+                    <form id="searchForm" class="d-flex search-form">
+                        <select class="form-select me-2" id="filterType">
+                            <option value="ten_sach">Lọc theo tên sách</option>
+                            <option value="tac_gia">Lọc theo tác giả</option>
+                            <option value="nam_xuat_ban">Lọc theo năm xuất bản</option>
+                            <option value="id_chu_de">Lọc theo chủ đề</option>
+                        </select>
+                        <input id="searchInput" class="form-control me-2" type="text" placeholder="Nhập từ khóa...">
+                        <button id="searchButton" class="btn btn-danger me-2" type="submit">Lọc</button>
+                    </form>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+                    <button class="btn btn-info me-2" onclick="exportToExcel()">📤 Xuất Excel</button>
+                    <button class="btn btn-secondary me-2" onclick="importExcel()">📥 Nhập Excel</button>
+                    <input type="file" id="excelFile" accept=".xlsx, .xls" style="display: none;"
+                        onchange="handleFile(event)">
+                </div>
+            </div>
+            <table class="table table-bordered table-hover">
+                <!-- Bảng hiển thị kết quả -->
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên sách</th>
+                        <th>Tác giả</th>
+                        <th>Năm xuất bản</th>
+                        <th>Số lượng</th>
+                        <th>Số lượt xem</th>
+                        <th>ID chủ đề</th>
+                        <th>Hình ảnh</th>
+                        <th>Mô tả</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody id="bookTableBody">
+                    <tr>
+                        <td colspan="9">Nhập từ khóa và nhấn "Lọc" để tìm kiếm.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <!-- Bootstrap Modal Thêm Sách -->
+        <div class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="bookModalLabel">Thêm Sách</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Form nhập thông tin sách -->
+                        <form id="bookForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="idSach" class="form-label">ID Sách:</label>
+                                <input type="number" id="idSach" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tenSach" class="form-label">Tên sách:</label>
+                                <input type="text" id="tenSach" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tacGia" class="form-label">Tác giả:</label>
+                                <input type="text" id="tacGia" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="namXuatBan" class="form-label">Năm xuất bản:</label>
+                                <input type="number" id="namXuatBan" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="soLuong" class="form-label">Số lượng:</label>
+                                <input type="number" id="soLuong" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="soLuotXem" class="form-label">Số lượt xem:</label>
+                                <input type="number" id="soLuotXem" class="form-control" value="0" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="idChuDe" class="form-label">Chủ đề:</label>
+                                <select id="idChuDe" class="form-control" required>
+                                    <option value="">Đang tải chủ đề...</option>
+                                </select>
+                            </div>
+                            <!-- Thêm ảnh -->
+                            <div class="mb-3">
+                                <label for="hinhAnh" class="form-label">Hình ảnh:</label>
+                                <input type="file" id="hinhAnh" class="form-control" accept="image/*" required>
+                                <img id="previewImage" src="#" alt="Xem trước ảnh"
+                                    style="display:none; margin-top:10px; max-width: 100%; height: auto;">
+                            </div>
+                            <div class="mb-3">
+                                <label for="moTaSach" class="form-label">Mô tả sách:</label>
+                                <textarea id="moTaSach" class="form-control" rows="3" required></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-warning" id="clearBook">Xóa thông tin</button>
+                        <button type="button" class="btn btn-success" id="saveBook">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            // Xem trước ảnh khi chọn file
+            document.getElementById('hinhAnh').addEventListener('change', function (event) {
+                let reader = new FileReader();
+                reader.onload = function () {
+                    let preview = document.getElementById('previewImage');
+                    preview.src = reader.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            });
+        </script>
+
+
+        <!-- Bootstrap Modal Sửa Sách -->
+        <div class="modal fade" id="editBookModal" tabindex="-1" aria-labelledby="editBookModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editBookModalLabel">Sửa Sách</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Form chỉnh sửa thông tin sách -->
+                        <div class="mb-3">
+                            <label for="editIdSach" class="form-label">ID Sách:</label>
+                            <input type="number" id="editIdSach" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editTenSach" class="form-label">Tên Sách:</label>
+                            <input type="text" id="editTenSach" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editTacGia" class="form-label">Tác Giả:</label>
+                            <input type="text" id="editTacGia" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNamXuatBan" class="form-label">Năm Xuất Bản:</label>
+                            <input type="number" id="editNamXuatBan" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editSoLuong" class="form-label">Số Lượng:</label>
+                            <input type="number" id="editSoLuong" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editSoLuotXem" class="form-label">Số Lượt Xem:</label>
+                            <input type="number" id="editSoLuotXem" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editIdChuDe" class="form-label">Chủ đề:</label>
+                            <select id="editIdChuDe" class="form-control" required>
+                                <option value="">Đang tải chủ đề...</option>
+                            </select>
+                        </div>
+
+                        <!-- Hiển thị ảnh từ BLOB -->
+                        <div class="mb-3">
+                            <label class="form-label">Hình ảnh hiện tại:</label>
+                            <img id="previewHinhAnh" src="" class="img-thumbnail d-block" style="max-width: 200px;">
+                        </div>
+
+                        <!-- Tải ảnh mới -->
+                        <div class="mb-3">
+                            <label for="editHinhAnhFile" class="form-label">Chọn ảnh mới:</label>
+                            <input type="file" id="editHinhAnhFile" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editMoTaSach" class="form-label">Mô tả sách:</label>
+                            <textarea id="editMoTaSach" class="form-control" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-warning" id="clearEditBook">Xóa thông tin</button>
+                        <button type="button" class="btn btn-primary" id="saveEditBook">Lưu thay đổi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!--Modal xóa sách-->
+        <div id="deleteBookModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Xác nhận xóa sách</h5>
+                    </div>
+                    <div class="modal-body">
+                        Bạn có chắc chắn muốn xóa sách này không?
+                        <input type="hidden" id="deleteIdSach">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteBook">Xác nhận xóa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Modal tìm kiếm sách-->
+        <div class="modal fade" id="searchBookModal" tabindex="-1" aria-labelledby="searchBookModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="searchBookModalLabel">Tìm Kiếm Sách</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="searchMaSach" class="form-label">Nhập Mã Sách:</label>
+                            <input type="text" id="searchMaSach" class="form-control">
+                        </div>
+                        <!-- Nút Hủy đóng modal -->
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <!-- Nút Xóa thông tin để reset trường nhập -->
+                        <button type="button" class="btn btn-warning" id="clearSearchButton">Xóa thông tin</button>
+                        <button type="button" class="btn btn-primary" id="searchBookButton">Tìm Kiếm</button>
+                        <hr>
+                        <div id="searchResult"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</body>
+
+</html>

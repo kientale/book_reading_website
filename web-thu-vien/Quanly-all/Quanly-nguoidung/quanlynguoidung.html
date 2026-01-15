@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Thư viện Online</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script>
+
+        // Hàm thực hiện gọi AJAX đến loc.php
+        function fetchFilteredUsers() {
+            console.log("fetchFilteredUsers() được gọi!");
+
+            const keyword = document.getElementById("searchInput").value.trim();
+            const filterType = document.getElementById("filterType").value;
+            const userTableBody = document.getElementById("userTableBody");
+
+            fetch("loc.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ keyword, filterType })
+            })
+                .then(response => response.json())
+                .then(users => {
+                    console.log("Dữ liệu nhận được:", users);
+                    userTableBody.innerHTML = ""; // Xóa nội dung cũ
+
+                    if (!Array.isArray(users)) {
+                        userTableBody.innerHTML = "<tr><td colspan='8'>Lỗi khi tải dữ liệu.</td></tr>";
+                        console.error("Lỗi: Dữ liệu trả về không phải mảng", users);
+                        return;
+                    }
+                    if (users.length === 0) {
+                        userTableBody.innerHTML = "<tr><td colspan='8'>Không tìm thấy kết quả.</td></tr>";
+                    } else {
+                        users.forEach(user => {
+                            const row = `<tr>
+            <td>${user.ma_nguoi_dung}</td>
+            <td>${user.tai_khoan}</td>
+            <td>${user.mat_khau}</td>
+            <td>${user.ho_ten}</td>
+            <td>${user.tuoi}</td>
+            <td>${user.email}</td>
+            <td>${user.so_dien_thoai}</td>
+            <td>${user.dia_chi}</td>
+            <td style="background: #76b5c5">
+                        <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" 
+                            data-bs-target="#editUserModal" onclick="setEditUser(${user.ma_nguoi_dung})">
+                            Sửa
+                        </button>
+                       <button class="btn btn-danger btn-sm" 
+        data-bs-toggle="modal" 
+        data-bs-target="#deleteUserModal" 
+        onclick="setDeleteUser('${user.ma_nguoi_dung}')" style="margin-right: 5px;">
+    Xóa
+</button>
+                    </td>
+          </tr>`;
+                            userTableBody.innerHTML += row;
+                        });
+                    }
+                })
+                .catch(error => {
+                    userTableBody.innerHTML = "<tr><td colspan='8'>Lỗi khi tải dữ liệu.</td></tr>";
+                    console.error("Lỗi khi tải dữ liệu:", error);
+                });
+        }
+
+        function resetDisplay() {
+            console.log("resetDisplay() được gọi!");
+            // Xóa nội dung ô tìm kiếm
+            document.getElementById("searchInput").value = "";
+            // Đưa bộ lọc về giá trị đầu tiên
+            document.getElementById("filterType").selectedIndex = 0;
+            // Gọi hàm fetchUserData để tải lại toàn bộ dữ liệu người dùng và hiển thị lên bảng
+            const userTableBody = document.getElementById("userTableBody");
+            fetchUserData(userTableBody);
+        }
+
+        window.onload = function () {
+            console.log("Trang đã tải xong!");
+
+            // Kiểm tra userTableBody sau khi trang tải hoàn toàn
+            let userTableBody = document.getElementById("userTableBody");
+
+            if (!userTableBody) {
+                console.warn("Chưa tìm thấy phần tử userTableBody, thử lại sau...");
+
+                // Đợi 1 giây rồi kiểm tra lại
+                setTimeout(() => {
+                    userTableBody = document.getElementById("userTableBody");
+                    console.log("Kiểm tra lại sau 1 giây:", userTableBody);
+                    if (!userTableBody) {
+                        console.error("Vẫn không tìm thấy userTableBody! Kiểm tra lại ID trong HTML.");
+                        return;
+                    }
+                    fetchUserData(userTableBody);
+                }, 1000);
+            } else {
+                fetchUserData(userTableBody);
+            }
+        };
+
+
+        // Hàm reset toàn bộ trường trong form
+        function resetUserForm() {
+            console.log("Resetting form fields...");
+            const fieldIds = [
+                "maNguoiDung", "taiKhoan", "matKhau",
+                "hoTen", "tuoi", "email", "soDienThoai", "diaChi"
+            ];
+            fieldIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.value = "";
+                } else {
+                    console.warn(`Không tìm thấy element với id "${id}"`);
+                }
+            });
+        }
+
+        // Hàm khởi tạo các event handler cho việc reset form
+        function initResetHandlers() {
+            // Gán sự kiện cho nút "Xóa thông tin"
+            const clearBtn = document.getElementById("clearBtn");
+            if (clearBtn) {
+                clearBtn.addEventListener("click", function () {
+                    console.log("Clear button clicked.");
+                    resetUserForm();
+                });
+            } else {
+                console.error("Không tìm thấy nút 'clearBtn'. Vui lòng kiểm tra lại ID trong HTML.");
+            }
+
+            // Khi modal bị ẩn, reset lại form
+            const userModalEl = document.getElementById("userModal");
+            if (userModalEl) {
+                userModalEl.addEventListener('hidden.bs.modal', function () {
+                    console.log("Modal hidden event triggered.");
+                    resetUserForm();
+                });
+            } else {
+                console.error("Không tìm thấy modal với id 'userModal'.");
+            }
+        }
+
+        // Cho phép các nút khác sử dụng các hàm này
+        window.resetUserForm = resetUserForm;
+        window.initResetHandlers = initResetHandlers;
+
+        // Khởi tạo các event handler khi DOM đã được load
+        document.addEventListener("DOMContentLoaded", function () {
+            initResetHandlers();
+        });
+
+        /*Thêm người dùng*/
+        document.addEventListener("DOMContentLoaded", () => {
+            // Hàm reset toàn bộ trường trong form
+            function resetUserForm() {
+                console.log("Resetting form fields...");
+                const fieldIds = [
+                    "maNguoiDung",
+                    "taiKhoan",
+                    "matKhau",
+                    "hoTen",
+                    "tuoi",
+                    "email",
+                    "soDienThoai",
+                    "diaChi"
+                ];
+                fieldIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.value = "";
+                    } else {
+                        console.warn(`Không tìm thấy element với id "${id}"`);
+                    }
+                });
+            }
+
+            // Hàm khởi tạo các sự kiện reset form: nút "Xóa thông tin" và khi modal ẩn
+            function initResetHandlers() {
+                const clearBtn = document.getElementById("clearBtn");
+                if (clearBtn) {
+                    clearBtn.addEventListener("click", () => {
+                        console.log("Clear button clicked.");
+                        resetUserForm();
+                    });
+                } else {
+                    console.error("Không tìm thấy nút 'clearBtn'.");
+                }
+
+                const userModalEl = document.getElementById("userModal");
+                if (userModalEl) {
+                    userModalEl.addEventListener("hidden.bs.modal", () => {
+                        console.log("Modal hidden event triggered.");
+                        resetUserForm();
+                    });
+                } else {
+                    console.error("Không tìm thấy modal với id 'userModal'.");
+                }
+            }
+
+            // Hàm khởi tạo sự kiện cho nút "Lưu" để gửi dữ liệu người dùng
+            function initSaveUserHandler() {
+                const saveUserBtn = document.getElementById("saveUser");
+                if (!saveUserBtn) {
+                    console.error("Không tìm thấy nút 'saveUser'.");
+                    return;
+                }
+                saveUserBtn.addEventListener("click", () => {
+                    // Lấy dữ liệu từ các trường input
+                    const maNguoiDung = document.getElementById("maNguoiDung").value.trim();
+                    const taiKhoan = document.getElementById("taiKhoan").value.trim();
+                    const matKhau = document.getElementById("matKhau").value.trim();
+                    const hoTen = document.getElementById("hoTen").value.trim();
+                    const tuoi = document.getElementById("tuoi").value.trim();
+                    const email = document.getElementById("email").value.trim();
+                    const soDienThoai = document.getElementById("soDienThoai").value.trim();
+                    const diaChi = document.getElementById("diaChi").value.trim();
+
+                    // Kiểm tra xem tất cả các trường đã được điền hay chưa
+                    if (!maNguoiDung || !taiKhoan || !matKhau || !hoTen ||
+                        !tuoi || !email || !soDienThoai || !diaChi) {
+                        alert("Vui lòng nhập đầy đủ thông tin!");
+                        return;
+                    }
+
+                    const userData = {
+                        maNguoiDung,
+                        taiKhoan,
+                        matKhau,
+                        hoTen,
+                        tuoi,
+                        email,
+                        soDienThoai,
+                        diaChi
+                    };
+
+                    // Gửi dữ liệu đến server bằng fetch API
+                    fetch("themnguoidung.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(userData)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.success); // Thông báo thành công
+                                location.reload();    // Reload trang để cập nhật danh sách người dùng
+                            } else {
+                                alert(data.error);    // Hiển thị lỗi từ server
+                            }
+                        })
+                        .catch(error => console.error("Lỗi khi gửi dữ liệu:", error));
+                });
+            }
+
+            // Hàm khởi tạo toàn bộ các event handler liên quan đến thêm người dùng
+            function initAddUserHandlers() {
+                initResetHandlers();
+                initSaveUserHandler();
+            }
+
+            // Expose các hàm nếu cần sử dụng từ các file JS khác
+            window.resetUserForm = resetUserForm;
+            window.initAddUserHandlers = initAddUserHandlers;
+
+            // Gọi hàm khởi tạo khi DOM đã sẵn sàng
+            initAddUserHandlers();
+        });
+
+        /*Tìm kiếm người dùng*/
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchUserButton = document.getElementById("searchUserButton");
+            const clearSearchButton = document.getElementById("clearSearchButton");
+            const searchInput = document.getElementById("searchMaNguoiDung");
+            const searchResult = document.getElementById("searchResult");
+
+            // Sự kiện cho nút Tìm kiếm
+            searchUserButton.addEventListener("click", function () {
+                const maNguoiDung = searchInput.value.trim();
+
+                if (!maNguoiDung) {
+                    alert("Vui lòng nhập mã người dùng!");
+                    return;
+                }
+
+                fetch("timkiemnguoidung.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ maNguoiDung })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success || !data.user) {
+                            searchResult.innerHTML = `<p class="text-danger">${data.error || "Không tìm thấy người dùng!"}</p>`;
+                        } else {
+                            const user = data.user;
+                            searchResult.innerHTML = `
+            <table class="table table-bordered mt-3">
+              <tr><th>Mã Người Dùng</th><td>${user.ma_nguoi_dung || "Không có dữ liệu"}</td></tr>
+              <tr><th>Tài Khoản</th><td>${user.tai_khoan || "Không có dữ liệu"}</td></tr>
+              <tr><th>Mật khẩu</th><td>${user.mat_khau || "Không có dữ liệu"}</td></tr>
+              <tr><th>Họ Tên</th><td>${user.ho_ten || "Không có dữ liệu"}</td></tr>
+              <tr><th>Tuổi</th><td>${user.tuoi || "Không có dữ liệu"}</td></tr>
+              <tr><th>Email</th><td>${user.email || "Không có dữ liệu"}</td></tr>
+              <tr><th>SĐT</th><td>${user.so_dien_thoai || "Không có dữ liệu"}</td></tr>
+              <tr><th>Địa Chỉ</th><td>${user.dia_chi || "Không có dữ liệu"}</td></tr>
+            </table>
+          `;
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi tìm kiếm người dùng:", error));
+            });
+
+            // Sự kiện cho nút Xóa thông tin (Clear)
+            clearSearchButton.addEventListener("click", function () {
+                searchInput.value = "";
+                searchResult.innerHTML = "";
+                console.log("Thông tin tìm kiếm đã được xóa.");
+            });
+        });
+
+
+
+
+
+        // Hàm tải dữ liệu từ PHP và render vào bảng
+        function fetchUserData(userTableBody) {
+            fetch("quanlynguoidung.php")
+                .then((response) => response.json())
+                .then((users) => {
+                    console.log("Dữ liệu nhận được:", users);
+
+                    if (!Array.isArray(users)) {
+                        console.error("Lỗi: Dữ liệu không phải mảng", users);
+                        return;
+                    }
+
+                    userTableBody.innerHTML = ""; // Xóa nội dung cũ
+
+                    users.forEach((user) => {
+                        const row = `<tr>
+                    <td>${user.ma_nguoi_dung}</td>
+                    <td>${user.tai_khoan}</td>
+                    <td>${user.mat_khau}</td>
+                    <td>${user.ho_ten}</td>
+                    <td>${user.tuoi}</td>
+                    <td>${user.email}</td>
+                    <td>${user.so_dien_thoai}</td>
+                    <td>${user.dia_chi}</td>
+                    <td style="background: #76b5c5">
+                        <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" 
+                            data-bs-target="#editUserModal" onclick="setEditUser(${user.ma_nguoi_dung})">
+                            Sửa
+                        </button>
+                       <button class="btn btn-danger btn-sm" 
+        data-bs-toggle="modal" 
+        data-bs-target="#deleteUserModal" 
+        onclick="setDeleteUser('${user.ma_nguoi_dung}')" style="margin-right: 5px;">
+    Xóa
+</button>
+                    </td>
+                </tr>`;
+                        userTableBody.innerHTML += row;
+                    });
+                })
+                .catch((error) => console.error("Lỗi khi tải dữ liệu:", error));
+        }
+
+        function setEditUser(maNguoiDung) {
+            fetch("quanlynguoidung.php")
+                .then((response) => response.json())
+                .then((users) => {
+                    const user = users.find((user) => user.ma_nguoi_dung == maNguoiDung);
+                    if (!user) {
+                        console.error("Không tìm thấy người dùng với mã:", maNguoiDung);
+                        return;
+                    }
+                    document.getElementById("editMaNguoiDung").value = user.ma_nguoi_dung;
+                    document.getElementById("editTaiKhoan").value = user.tai_khoan;
+                    document.getElementById("editMatKhau").value = user.mat_khau;
+                    document.getElementById("editHoTen").value = user.ho_ten;
+                    document.getElementById("editTuoi").value = user.tuoi;
+                    document.getElementById("editEmail").value = user.email;
+                    document.getElementById("editSoDienThoai").value = user.so_dien_thoai;
+                    document.getElementById("editDiaChi").value = user.dia_chi;
+                })
+                .catch((error) => console.error("Lỗi khi tải dữ liệu người dùng:", error));
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            function resetEditUserForm() {
+                ["editMaNguoiDung", "editTaiKhoan", "editMatKhau", "editHoTen", "editTuoi", "editEmail", "editSoDienThoai", "editDiaChi"]
+                    .forEach(id => document.getElementById(id).value = "");
+            }
+
+            document.getElementById("clearEditBtn")?.addEventListener("click", resetEditUserForm);
+            document.getElementById("editUserModal")?.addEventListener("hidden.bs.modal", resetEditUserForm);
+
+            document.getElementById("saveEditUser")?.addEventListener("click", function () {
+                const maNguoiDung = document.getElementById("editMaNguoiDung").value.trim();
+                const taiKhoan = document.getElementById("editTaiKhoan").value.trim();
+                const matKhau = document.getElementById("editMatKhau").value.trim();
+                const hoTen = document.getElementById("editHoTen").value.trim();
+                const tuoi = document.getElementById("editTuoi").value.trim();
+                const email = document.getElementById("editEmail").value.trim();
+                const soDienThoai = document.getElementById("editSoDienThoai").value.trim();
+                const diaChi = document.getElementById("editDiaChi").value.trim();
+
+                if (!taiKhoan || !matKhau || !hoTen || !tuoi || !email || !soDienThoai || !diaChi) {
+                    alert("Vui lòng nhập đầy đủ thông tin!");
+                    return;
+                }
+
+                fetch("kiemtra_id.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ maNguoiDung })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists && data.maNguoiDung !== maNguoiDung) {
+                            alert("Mã người dùng đã tồn tại trong hệ thống!");
+                        } else {
+                            updateUser({ maNguoiDung, taiKhoan, matKhau, hoTen, tuoi, email, soDienThoai, diaChi });
+                        }
+                    })
+                    .catch(error => console.error("Lỗi kiểm tra ID:", error));
+            });
+        });
+
+        function updateUser(editData) {
+            fetch("suanguoidung.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(editData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Cập nhật thành công!");
+                        location.reload();
+                    } else {
+                        alert("Cập nhật thất bại! " + (data.error || ""));
+                    }
+                })
+                .catch(error => console.error("Lỗi khi cập nhật người dùng:", error));
+        }
+
+
+
+
+        /*Xóa người dùng*/
+        document.addEventListener("DOMContentLoaded", function () {
+            function setDeleteUser(maNguoiDung) {
+                console.log("Người dùng cần xóa:", maNguoiDung);
+
+                // Kiểm tra phần tử input ẩn
+                const deleteInput = document.getElementById("deleteMaNguoiDung");
+                if (deleteInput) {
+                    deleteInput.value = maNguoiDung;
+                } else {
+                    console.error("Không tìm thấy input ẩn #deleteMaNguoiDung.");
+                }
+            }
+
+            // Xử lý sự kiện khi nhấn "Xác nhận xóa"
+            document.getElementById("confirmDeleteUser").addEventListener("click", function () {
+                const deleteInput = document.getElementById("deleteMaNguoiDung");
+                const maNguoiDung = deleteInput ? deleteInput.value.trim() : "";
+
+                if (!maNguoiDung) {
+                    alert("Lỗi: Không tìm thấy mã người dùng cần xóa!");
+                    return;
+                }
+
+                if (!confirm("Bạn có chắc chắn muốn xóa người dùng này?")) {
+                    return;
+                }
+
+                fetch("xoanguoidung.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ maNguoiDung })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Xóa thành công!");
+                            location.reload();
+                        } else {
+                            alert("Lỗi: " + data.error);
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi xóa người dùng:", error));
+            });
+
+            // Đưa setDeleteUser vào phạm vi toàn cục để đảm bảo nó có thể gọi được từ HTML
+            window.setDeleteUser = setDeleteUser;
+        });
+
+
+        // Chờ DOM được tải xong
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("DOM đã được load, JS chạy");
+
+            // Gắn sự kiện submit cho form tìm kiếm
+            const searchForm = document.getElementById("searchForm");
+            if (searchForm) {
+                searchForm.addEventListener("submit", function (event) {
+                    event.preventDefault(); // Ngăn reload trang
+                    fetchFilteredUsers();
+                });
+            } else {
+                console.error("Không tìm thấy form với id 'searchForm'");
+            }
+        });
+
+        //Xuất Excel
+        async function exportToExcel() {
+            let fileName = prompt("Nhập tên file (không cần .xlsx):", "User_List");
+            if (!fileName) return; // Nếu người dùng nhấn hủy
+
+            let table = document.querySelector("table");
+
+            // Lấy dữ liệu từ bảng, loại bỏ cột cuối cùng (Hành động)
+            let data = [];
+            let rows = table.querySelectorAll("tr");
+
+            rows.forEach((row, index) => {
+                let rowData = [];
+                let cells = row.querySelectorAll("th, td");
+
+                cells.forEach((cell, i) => {
+                    // Không thêm cột cuối cùng (Hành động: Sửa/Xóa)
+                    if (i < cells.length - 1) {
+                        rowData.push(cell.innerText);
+                    }
+                });
+
+                data.push(rowData);
+            });
+
+            // Tạo Workbook & Worksheet
+            let wb = XLSX.utils.book_new();
+            let ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, "Users");
+
+            // 🖥 Nếu trình duyệt hỗ trợ chọn nơi lưu file
+            if (window.showSaveFilePicker) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: `${fileName}.xlsx`,
+                        types: [
+                            {
+                                description: "Excel File",
+                                accept: { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"] },
+                            },
+                        ],
+                    });
+
+                    const writable = await handle.createWritable();
+                    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+                    await writable.write(new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+                    await writable.close();
+
+                    alert("Xuất file thành công!");
+                    return;
+                } catch (err) {
+                    console.error("Lỗi khi lưu file:", err);
+                }
+            }
+
+            // 🌍 Nếu trình duyệt không hỗ trợ, tự động tải file
+            XLSX.writeFile(wb, `${fileName}.xlsx`);
+        }
+
+
+        //Nhập file Excel
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("excelFile").addEventListener("change", handleFile);
+        });
+
+        function importExcel() {
+            document.getElementById('excelFile').click();
+        }
+
+        let isProcessing = false; // Biến kiểm soát việc xử lý
+
+        async function handleFile(event) {
+            if (isProcessing) return; // Nếu đang xử lý, không làm gì cả
+            isProcessing = true; // Đánh dấu đang xử lý
+
+            let file = event.target.files[0];
+            if (!file) {
+                isProcessing = false;
+                return;
+            }
+
+            let reader = new FileReader();
+            reader.readAsArrayBuffer(file);
+
+            reader.onload = async function (e) {
+                let data = new Uint8Array(e.target.result);
+                let workbook = XLSX.read(data, { type: "array" });
+
+                let sheetName = workbook.SheetNames[0];
+                let sheet = workbook.Sheets[sheetName];
+
+                let jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+                if (jsonData.length < 2) {
+                    alert("File không có dữ liệu hoặc không đúng định dạng!");
+                    isProcessing = false;
+                    return;
+                }
+
+                let headers = jsonData[0];
+                let dataRows = jsonData.slice(1);
+
+                let expectedHeaders = ["ID", "Tài Khoản", "Mật Khẩu", "Họ Tên", "Tuổi", "Email", "SĐT", "Địa Chỉ"];
+                if (!expectedHeaders.every((h, i) => headers[i] === h)) {
+                    alert("File Excel không đúng định dạng cột! Hãy kiểm tra lại.");
+                    isProcessing = false;
+                    return;
+                }
+
+                console.log("Đang lấy danh sách ID hiện có...");
+                let existingIDs = await fetchExistingIDs();
+                console.log("ID từ CSDL:", existingIDs);
+
+                let newData = [];
+                let duplicateIDs = [];
+
+                dataRows.forEach(row => {
+                    let id = row[0]?.toString().trim(); // Chuyển ID về dạng chuỗi
+                    if (!id) return;
+
+                    if (existingIDs.includes(id)) {
+                        duplicateIDs.push(id);
+                    } else {
+                        newData.push({
+                            ma_nguoi_dung: id,
+                            tai_khoan: row[1]?.toString().trim(),
+                            mat_khau: row[2]?.toString().trim(),
+                            ho_ten: row[3]?.toString().trim(),
+                            tuoi: parseInt(row[4]) || 0,
+                            email: row[5]?.toString().trim(),
+                            so_dien_thoai: row[6]?.toString().trim(),
+                            dia_chi: row[7]?.toString().trim()
+                        });
+                    }
+                });
+
+                if (duplicateIDs.length > 0) {
+                    alert(`Các ID sau đã tồn tại: ${duplicateIDs.join(", ")}. Hãy kiểm tra lại!`);
+                    isProcessing = false;
+                    return;
+                }
+
+                if (newData.length > 0) {
+                    console.log("📌 Đang gửi dữ liệu lên server...");
+                    await saveToDatabase(newData);
+                } else {
+                    alert("Không có dữ liệu mới để nhập vào CSDL.");
+                }
+
+                isProcessing = false; // Hoàn tất xử lý
+            };
+
+            reader.onerror = function (error) {
+                console.error("Lỗi đọc file:", error);
+                alert("Không thể đọc file Excel.");
+                isProcessing = false;
+            };
+        }
+
+        async function saveToDatabase(data) {
+            console.log("📌 Dữ liệu trước khi gửi (object):", data);
+            console.log("📌 Dữ liệu trước khi gửi (JSON):", JSON.stringify({ users: data }));
+
+            try {
+                let response = await fetch("http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-nguoidung/import-users.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ users: data }) // Đảm bảo JSON hợp lệ
+                });
+
+                let text = await response.text(); // Đọc phản hồi dạng text
+                console.log("📌 Response từ server (trước khi parse JSON):", text);
+
+                let result = JSON.parse(text); // Nếu lỗi, nghĩa là text không phải JSON
+                if (result.status === "success") {
+                    alert("Nhập file Excel thành công!");
+                    location.reload();
+                } else {
+                    alert(`Lỗi khi lưu vào CSDL: ${result.message}`);
+                }
+            } catch (error) {
+                console.error("Lỗi khi lưu dữ liệu:", error);
+                alert("Không thể lưu dữ liệu vào CSDL. Kiểm tra log console để biết thêm chi tiết.");
+            }
+        }
+
+
+        async function fetchExistingIDs() {
+            try {
+                let response = await fetch("http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-nguoidung/get-existing-ids.php");
+                if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status}`);
+
+                let data = await response.json();
+                console.log("Response từ server:", data);
+
+                if (data.success && Array.isArray(data.ids)) {
+                    return data.ids.map(id => id.toString().trim());
+                } else {
+                    console.warn("⚠ Dữ liệu ID không hợp lệ, sẽ sử dụng danh sách rỗng.");
+                    return [];
+                }
+            } catch (error) {
+                console.error("Lỗi lấy danh sách ID:", error);
+                return []; // Không hiển thị alert nữa, chỉ log lỗi
+            }
+        }
+
+
+    </script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+
+                <!-- Menu chính -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://short.com.vn/VSYd">Quản lý người
+                            dùng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-sach/quanlysach.html">Quản
+                            lý sách</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-tintuc/quanlytintuc.html">Quản
+                            lý tin tức</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-chude/quanlychude.html">Quản
+                            lý chủ đề</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Lienhe-hotro/lienhe_hotro.html">Liên
+                            hệ hỗ trợ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Thongke/thongke.html">Thống
+                            kê</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/BaoCao/baocao.html">Báo
+                            cáo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-chude/logout.php">Đăng
+                            xuất</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <style>
+            body {
+                background-color: #873e23;
+                /* Màu nền mong muốn */
+            }
+
+            .table {
+                background-color: white !important;
+                /* Giữ màu trắng cho bảng */
+            }
+        </style>
+        <div class="container mt-5">
+            <div class="container mt-4">
+                <!-- Các nút chức năng -->
+                <div class="mb-3 d-flex justify-content-start">
+                    <h2 class="text-center" style="margin-right: 100px; color: white;">Quản lý người dùng</h2>
+                    <button class="btn btn-primary me-2" data-bs-toggle="modal"
+                        data-bs-target="#userModal">Thêm</button>
+                    <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#searchUserModal">Tìm
+                        kiếm</button>
+                    <button class="btn btn-warning me-2" type="button" onclick="resetDisplay()">Reset</button>
+
+                    <!-- Giao diện -->
+                    <form id="searchForm" class="d-flex search-form"
+                        style="background-color: black; margin-right: 5px; padding: 10px;">
+                        <select class="form-select me-2" id="filterType">
+                            <option value="name">Lọc theo tên</option>
+                            <option value="age">Lọc theo tuổi</option>
+                            <option value="address">Lọc theo địa chỉ</option>
+                        </select>
+                        <input id="searchInput" class="form-control me-2" type="text" placeholder="Nhập từ khóa...">
+                        <button class="btn btn-danger me-2" type="submit">Lọc</button>
+                        <!--Thư viện cho nhập xuất-->
+                    </form>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+                    <button class="btn btn-info me-2" onclick="exportToExcel()">📤 Xuất Excel</button>
+                    <button class="btn btn-secondary me-2" onclick="importExcel()">📥 Nhập Excel</button>
+                    <input type="file" id="excelFile" accept=".xlsx, .xls" style="display: none;"
+                        onchange="handleFile(event)">
+                </div>
+            </div>
+            <!-- Bảng hiển thị kết quả -->
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tài Khoản</th>
+                        <th>Mật Khẩu</th>
+                        <th>Họ Tên</th>
+                        <th>Tuổi</th>
+                        <th>Email</th>
+                        <th>SĐT</th>
+                        <th>Địa Chỉ</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <tr>
+                        <td colspan="8">Nhập từ khóa và nhấn "Lọc" để tìm kiếm.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Popup Form (Bootstrap Modal) Thêm người dùng-->
+        <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userModalLabel">Thêm Người Dùng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Các trường nhập thông tin -->
+                        <div class="mb-3">
+                            <label for="maNguoiDung" class="form-label">Mã người dùng:</label>
+                            <input type="text" id="maNguoiDung" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="taiKhoan" class="form-label">Tài khoản:</label>
+                            <input type="text" id="taiKhoan" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="matKhau" class="form-label">Mật khẩu:</label>
+                            <input type="password" id="matKhau" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="hoTen" class="form-label">Họ tên:</label>
+                            <input type="text" id="hoTen" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="tuoi" class="form-label">Tuổi:</label>
+                            <input type="text" id="tuoi" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" id="email" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="soDienThoai" class="form-label">Số điện thoại:</label>
+                            <input type="text" id="soDienThoai" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="diaChi" class="form-label">Địa chỉ:</label>
+                            <textarea id="diaChi" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- Nút Hủy dùng để đóng modal (cũng reset form thông qua sự kiện modal hide) -->
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            id="cancelBtn">Hủy</button>
+                        <!-- Nút Xóa thông tin để reset form ngay lập tức -->
+                        <button type="button" class="btn btn-warning" id="clearBtn">Xóa thông tin</button>
+                        <button type="button" class="btn btn-success" id="saveUser">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Popup Modal Sửa Người Dùng -->
+        <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editUserModalLabel">Sửa Thông Tin Người Dùng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editUserForm">
+                            <div class="mb-3">
+                                <label for="editMaNguoiDung" class="form-label">Mã Người Dùng:</label>
+                                <input type="text" id="editMaNguoiDung" class="form-control" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTaiKhoan" class="form-label">Tài Khoản:</label>
+                                <input type="text" id="editTaiKhoan" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editMatKhau" class="form-label">Mật Khẩu:</label>
+                                <input type="password" id="editMatKhau" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editHoTen" class="form-label">Họ Tên:</label>
+                                <input type="text" id="editHoTen" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTuoi" class="form-label">Tuổi:</label>
+                                <input type="number" id="editTuoi" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editEmail" class="form-label">Email:</label>
+                                <input type="email" id="editEmail" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editSoDienThoai" class="form-label">Số Điện Thoại:</label>
+                                <input type="text" id="editSoDienThoai" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editDiaChi" class="form-label">Địa Chỉ:</label>
+                                <textarea id="editDiaChi" class="form-control"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- Nút Hủy dùng để đóng modal (và reset form thông qua sự kiện modal hide) -->
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            id="cancelEditBtn">Hủy</button>
+                        <!-- Nút Xóa thông tin để reset form ngay lập tức (sử dụng id "clearEditBtn") -->
+                        <button type="button" class="btn btn-warning" id="clearEditBtn">Xóa thông tin</button>
+                        <button type="button" class="btn btn-primary" id="saveEditUser">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Xác nhận Xóa -->
+        <div class="modal fade" id="deleteUserModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Xác nhận xóa</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn xóa người dùng này?</p>
+                        <input type="hidden" id="deleteMaNguoiDung">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button id="confirmDeleteUser" class="btn btn-danger">Xóa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popup Modal Tìm Kiếm Người Dùng -->
+        <div class="modal fade" id="searchUserModal" tabindex="-1" aria-labelledby="searchUserModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="searchUserModalLabel">Tìm Kiếm Người Dùng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="searchMaNguoiDung" class="form-label">Nhập Mã Người Dùng:</label>
+                            <input type="text" id="searchMaNguoiDung" class="form-control">
+                        </div>
+                        <!-- Nút Hủy đóng modal -->
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <!-- Nút Xóa thông tin để reset trường nhập -->
+                        <button type="button" class="btn btn-warning" id="clearSearchButton">Xóa thông tin</button>
+                        <button type="button" class="btn btn-primary" id="searchUserButton">Tìm Kiếm</button>
+                        <hr>
+                        <div id="searchResult"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

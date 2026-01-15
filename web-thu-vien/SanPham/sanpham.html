@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Thư viện Online</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/JS/main.js" defer></script>
+    <link rel="stylesheet" href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/SanPham/sanpham.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            loadBooks();
+        });
+
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentChuDeId = null; // Chủ đề đang chọn
+        let currentPageChuDe = 1;
+        let totalPagesChuDe = 1;
+
+        let sortByAllBooks = ""; // Trạng thái sắp xếp của tất cả sách
+        let sortByChuDe = "";    // Trạng thái sắp xếp theo chủ đề
+
+        function loadBooks(sortBy = sortByAllBooks, page = currentPage) {
+            currentChuDeId = null;
+            sortByAllBooks = sortBy;
+            currentPage = page;
+
+            let bookList = document.getElementById("book-list");
+            let pagination = document.getElementById("pagination");
+
+            // 1️⃣ Giữ nguyên chiều cao danh sách để tránh giật màn hình
+            let oldHeight = bookList.offsetHeight;
+            bookList.style.minHeight = oldHeight + "px";
+
+            // 2️⃣ Ẩn dần nội dung cũ trước khi tải dữ liệu mới
+            bookList.classList.add("fade-out");
+
+            // 3️⃣ Hiển thị Skeleton Loading mà không làm biến mất phân trang
+            setTimeout(() => {
+                bookList.innerHTML = `
+            <div class="loading-skeleton">
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
+        `;
+
+                pagination.style.opacity = "0.5"; // Giữ phân trang nhưng giảm mờ
+            }, 100);
+
+            fetch(`hienthisach.php?sort=${sortBy}&page=${page}`)
+                .then(response => response.json())
+                .then(data => {
+                    setTimeout(() => {
+                        bookList.innerHTML = ""; // Xóa nội dung cũ
+
+                        if (!data.books || data.books.length === 0) {
+                            bookList.innerHTML = `<p class="text-center">Không có sách nào.</p>`;
+                        } else {
+                            data.books.forEach(book => {
+                                bookList.innerHTML += `
+                            <div class="col-md-4 col-lg-3 mb-4 fade-in">
+                                <div class="card book-card shadow-sm" 
+                                    onclick="showBookModal(${book.id_sach},'${book.ten_sach}', '${book.tac_gia}', '${book.nam_xuat_ban}', '${book.so_luong}', '${book.so_luot_xem}', '${book.hinh_anh}', '${book.ten_chu_de}')">
+                                    <img src="${book.hinh_anh}" class="card-img-top" alt="${book.ten_sach}">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">${book.ten_sach}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                            });
+                        }
+
+                        totalPages = data.totalPages || 1;
+                        updatePagination();
+
+                        // 4️⃣ Hiệu ứng xuất hiện mượt mà
+                        bookList.classList.remove("fade-out");
+
+                        // Giữ chiều cao ổn định
+                        setTimeout(() => {
+                            bookList.style.minHeight = bookList.scrollHeight + "px";
+                            pagination.style.opacity = "1"; // Hiện phân trang dần dần thay vì đột ngột
+                        }, 200);
+                    }, 200);
+                })
+                .catch(error => console.error("Lỗi tải dữ liệu:", error));
+        }
+
+
+        function sortBooksBy(sortBy) {
+            if (currentChuDeId) {
+                // Nếu đang xem sách theo chủ đề, cập nhật sortByChuDe
+                sortByChuDe = sortBy;
+                loadBooksChuDe(currentChuDeId, currentPageChuDe, sortByChuDe);
+            } else {
+                // Nếu đang xem tất cả sách, cập nhật sortByAllBooks
+                sortByAllBooks = sortBy;
+                loadBooks(sortByAllBooks, 1);
+            }
+        }
+
+        // Cập nhật giao diện phân trang
+        function updatePagination() {
+            let pagination = document.getElementById("pagination");
+            if (!pagination) return;
+
+            pagination.innerHTML = `
+    <button class="btn btn-primary" onclick="prevPage()" ${currentPage === 1 ? "disabled" : ""}>Trang trước</button>
+    <span class="mx-2">Trang ${currentPage} / ${totalPages}</span>
+    <button class="btn btn-primary" onclick="nextPage()" ${currentPage === totalPages ? "disabled" : ""}>Trang sau</button>
+`;
+        }
+
+        // Chuyển trang
+        function prevPage() {
+            if (currentPage > 1) {
+                loadBooks(sortByAllBooks, currentPage - 1);
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                loadBooks(sortByAllBooks, currentPage + 1);
+            }
+        }
+
+
+        function showBookModal(id, ten, tacGia, namXB, soLuong, luotXem, hinhAnh, chuDe) {
+            let modal = document.getElementById("bookModal");
+
+            if (!modal) {
+                console.error("Lỗi: Không tìm thấy modal #bookModal");
+                return;
+            }
+
+            // Lưu ID sách vào modal
+            modal.setAttribute("data-id", id);
+
+            document.getElementById("bookModalLabel").innerText = ten;
+            document.getElementById("modalAuthor").innerText = tacGia;
+            document.getElementById("modalYear").innerText = namXB;
+            document.getElementById("modalQuantity").innerText = soLuong;
+            document.getElementById("modalViews").innerText = luotXem ? luotXem : 0;
+            document.getElementById("modalImage").src = hinhAnh;
+            document.getElementById("modalCategory").innerText = chuDe;
+
+            let myModal = new bootstrap.Modal(modal);
+            myModal.show();
+        }
+
+        function resetBooks() {
+            currentChuDeId = null; // Reset chủ đề
+            loadBooks();
+        }
+
+
+
+
+        //Hiển thị chủ đề
+        document.addEventListener("DOMContentLoaded", function () {
+            loadChuDe();
+        });
+
+        function loadChuDe() {
+            fetch("get_chu_de.php") // API lấy dữ liệu chủ đề từ CSDL
+                .then(response => response.json())
+                .then(data => {
+                    let danhSachChuDe = document.getElementById("danh-sach-chu-de");
+                    danhSachChuDe.innerHTML = "";
+
+                    data.forEach(chuDe => {
+                        let button = document.createElement("button");
+                        button.className = "chu-de-button";
+                        button.innerText = chuDe.ten_chu_de;
+                        button.onclick = function () {
+                            filterByChuDe(chuDe.id_chu_de);
+                        };
+                        danhSachChuDe.appendChild(button);
+                    });
+                })
+                .catch(error => console.error("Lỗi tải dữ liệu chủ đề:", error));
+        }
+
+
+
+
+        function filterByChuDe(idChuDe) {
+            currentChuDeId = idChuDe; // Lưu lại chủ đề đang chọn
+            currentPage = 1; // Reset về trang đầu tiên
+
+            fetchBooksByChuDe(currentChuDeId, currentPage);
+        }
+
+
+        function fetchBooksByChuDe(chuDe, page, sortBy = '') {
+            let url = `hienthisachtheochude.php?chu_de=${chuDe}&page=${page}`;
+            if (sortBy) url += `&sort_by=${sortBy}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    let bookList = document.getElementById("book-list");
+                    let pagination = document.getElementById("pagination");
+                    let categoryTitle = document.getElementById("category-title");
+                    bookList.innerHTML = "";
+
+                    if (!data.books || data.books.length === 0) {
+                        bookList.innerHTML = `<p class="text-center">Không có sách nào trong chủ đề này.</p>`;
+                        pagination.style.display = "none";
+                        return;
+                    }
+
+                    pagination.style.display = "block";
+                    let tenChuDe = data.ten_chu_de || "Chủ đề không xác định";
+                    categoryTitle.innerText = `Chủ đề: ${tenChuDe}`;
+
+                    data.books.forEach(book => {
+                        bookList.innerHTML += `
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card book-card shadow-sm" 
+                    onclick="showBookModal(${book.id_sach},'${book.ten_sach}', '${book.tac_gia}', '${book.nam_xuat_ban}', '${book.so_luong}', '${book.so_luot_xem}', '${book.hinh_anh}', '${tenChuDe}')">
+                    <img src="${book.hinh_anh}" class="card-img-top" alt="${book.ten_sach}" onerror="this.onerror=null; this.src='img/default.png';">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">${book.ten_sach}</h5>
+                    </div>
+                </div>
+            </div>
+        `;
+                    });
+
+                    updatePagination(data.totalPages);
+                })
+                .catch(error => console.error("Lỗi tải dữ liệu sách theo chủ đề:", error));
+        }
+
+
+        function loadBooksChuDe(chuDeId, page = 1, sortBy = sortByChuDe) {
+            currentChuDeId = chuDeId;
+            sortByChuDe = sortBy;
+            currentPageChuDe = page;
+
+            let bookList = document.getElementById("book-list");
+            let pagination = document.getElementById("pagination");
+
+            // 1️⃣ Giữ nguyên chiều cao để tránh layout bị giật
+            let oldHeight = bookList.offsetHeight;
+            bookList.style.minHeight = oldHeight + "px";
+
+            // 2️⃣ Ẩn dần nội dung cũ trước khi tải dữ liệu mới
+            bookList.classList.add("fade-out");
+
+            // 3️⃣ Hiển thị Skeleton Loading
+            setTimeout(() => {
+                bookList.innerHTML = `
+        <div class="loading-skeleton">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+        </div>`;
+
+                pagination.style.opacity = "0.5"; // Giữ phân trang nhưng giảm mờ
+            }, 150);
+
+            fetch(`hienthisachtheochude.php?chu_de=${chuDeId}&page=${page}&sort_by=${sortBy}`)
+                .then(response => response.json())
+                .then(data => {
+                    setTimeout(() => {
+                        bookList.innerHTML = ""; // Xóa nội dung cũ khi có dữ liệu mới
+
+                        if (!data.books || data.books.length === 0) {
+                            bookList.innerHTML = `<p class="text-center">Không có sách nào trong chủ đề này.</p>`;
+                        } else {
+                            let tenChuDe = data.ten_chu_de || "Chủ đề không xác định";
+                            data.books.forEach(book => {
+                                bookList.innerHTML += `
+                        <div class="col-md-4 col-lg-3 mb-4 fade-in">
+                            <div class="card book-card shadow-sm" 
+                                onclick="showBookModal(${book.id_sach},'${book.ten_sach}', '${book.tac_gia}', '${book.nam_xuat_ban}', '${book.so_luong}', '${book.so_luot_xem}', '${book.hinh_anh}', '${tenChuDe}')">
+                                <img src="${book.hinh_anh}" class="card-img-top" alt="${book.ten_sach}" onerror="this.onerror=null; this.src='img/default.png';">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">${book.ten_sach}</h5>
+                                </div>
+                            </div>
+                        </div>`;
+                            });
+
+                            totalPagesChuDe = data.totalPages;
+                            updatePaginationChuDe();
+                        }
+
+                        // 4️⃣ Hiệu ứng xuất hiện mượt mà
+                        bookList.classList.remove("fade-out");
+
+                        // Giữ chiều cao ổn định
+                        setTimeout(() => {
+                            bookList.style.minHeight = bookList.scrollHeight + "px";
+                            pagination.style.opacity = "1"; // Hiện phân trang dần dần thay vì đột ngột
+                        }, 200);
+                    }, 200); // Giữ Skeleton Loading tối thiểu 300ms để tránh quá nhanh
+                })
+                .catch(error => console.error("Lỗi tải dữ liệu sách theo chủ đề:", error));
+        }
+
+
+        function updatePaginationChuDe() {
+            let pagination = document.getElementById("pagination");
+            if (!pagination) return;
+
+            pagination.innerHTML = `
+    <button class="btn btn-primary" onclick="prevPageChuDe()" ${currentPageChuDe === 1 ? "disabled" : ""}>Trang trước</button>
+    <span class="mx-2">Trang ${currentPageChuDe} / ${totalPagesChuDe}</span>
+    <button class="btn btn-primary" onclick="nextPageChuDe()" ${currentPageChuDe === totalPagesChuDe ? "disabled" : ""}>Trang sau</button>
+`;
+        }
+
+        function prevPageChuDe() {
+            if (currentPageChuDe > 1) {
+                loadBooksChuDe(currentChuDeId, currentPageChuDe - 1, sortByChuDe);
+            }
+        }
+
+        function nextPageChuDe() {
+            if (currentPageChuDe < totalPagesChuDe) {
+                loadBooksChuDe(currentChuDeId, currentPageChuDe + 1, sortByChuDe);
+            }
+        }
+
+
+        // Khi chọn chủ đề, gọi hàm mới
+        function filterByChuDe(chuDeId) {
+            currentChuDeId = chuDeId;
+            currentPage = 1;
+            loadBooksChuDe(currentChuDeId, currentPage);
+        }
+
+    </script>
+</head>
+
+<body class="loading">
+    <!-- Loading Animation -->
+    <div id="loading"></div>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <!-- Nút toggle khi thu nhỏ -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Danh sách menu -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 menu">
+                        <li class="nav-item">
+                            <a class="nav-link active"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/trangchu/trangchu.html">Trang
+                                chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/GioiThieu/gioithieu.html">Giới
+                                thiệu</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/SanPham/sanpham.html">Sản
+                                phẩm</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Tintuc/tintuc.html">Tin
+                                tức</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Lienhe/lienhe.html">Liên
+                                hệ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/DangNhap_DangKy/DangNhap/dangnhap.html">Đăng
+                                nhập</a>
+                        </li>
+                    </ul>
+
+                    <!-- Form tìm kiếm -->
+                    <form class="d-flex search-form">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Banner -->
+        <section id="banner" class="d-flex align-items-center justify-content-center text-center">
+            <div class="text-content">
+                <h3>KTL - LIBRARY</h3>
+                <h1>CLASS OF 2025</h1>
+                <hr class="line">
+            </div>
+        </section>
+
+        <!-- Nội dung chính -->
+        <div class="main-container">
+            <div class="noi-dung">
+                <div class="content-container">
+                    <!-- Khối bên trái -->
+                    <div class="container" style="margin: 10px 60px 20px 60px;">
+                        <div class="chu-de-container">
+                            <h2 class="text-center text-light">Danh sách Chủ đề</h2>
+                            <div class="chu-de-buttons d-flex flex-wrap justify-content-center" id="danh-sach-chu-de">
+                                <!-- Chủ đề sẽ được thêm vào đây -->
+                            </div>
+                        </div>
+
+                        <!-- Khối bên phải -->
+                        <div class="sach-container">
+                            <!-- Thanh lọc với nền màu -->
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="sort-container p-3 rounded d-flex justify-content-center border flex-grow-1"
+                                    style="background-color:#21130d; margin-right: 10px; color: white; font-size: 20px;">
+                                    <label class="me-2 fw-bold">Sắp xếp</label>
+                                    <button class="btn btn-primary me-2" onclick="sortBooksBy('views')">Lượt
+                                        xem</button>
+                                    <button class="btn btn-success me-2" onclick="sortBooksBy('year')">Năm xuất
+                                        bản</button>
+                                    <button class="btn btn-warning me-2" onclick="sortBooksBy('quantity')">Số
+                                        lượng</button>
+                                    <button class="btn btn-secondary" onclick="loadBooks()">Reset</button>
+                                </div>
+                            </div>
+
+                            <!-- Danh sách sách dạng card -->
+                            <div class="row" id="book-list"></div>
+
+                            <!-- Phân trang -->
+                            <div id="pagination" class="text-center mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pink-section text-center p-4">
+                    <div class="container-fluid text-center">
+                        <div class="numbers d-flex flex-md-row flex-wrap justify-content-center">
+                            <div class="rect">
+                                <h1>120</h1>
+                                <p>Người đọc</p>
+                            </div>
+                            <div class="rect">
+                                <h1>40</h1>
+                                <p>Đánh giá từ người đọc</p>
+                            </div>
+                            <div class="rect">
+                                <h1>6</h1>
+                                <p>Người đọc trực tuyến</p>
+                            </div>
+                            <div class="rect">
+                                <h1>152</h1>
+                                <p>Cuốn sách</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-section">
+                <!-- Hiển thị danh ngôn -->
+                <div class="danh-ngon bg-dark text-light p-3 rounded text-center">
+                    <blockquote id="danhNgonText" class="fs-5 fst-italic"></blockquote>
+                </div>
+
+
+
+                <!-- Hiển thị sách gợi ý-->
+                <h2 class="text-center text-light" style="margin-top: 20px;">Sách Gợi Ý</h2>
+
+                <!-- Carousel Bootstrap -->
+                <div id="sachCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner" id="sach-goi-y"></div>
+
+                    <!-- Nút điều hướng trái/phải -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#sachCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#sachCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    </button>
+                </div>
+
+                <!-- Hình ảnh bổ sung -->
+                <div class="extra-images mt-3 text-center">
+                    <img src="https://i.pinimg.com/736x/a9/5f/e6/a95fe66ec983b16b38af8439751e702c.jpg"
+                        class="img-fluid rounded shadow mt-2" alt="Hình 2" width="100%">
+                </div>
+
+            </div>
+
+            <script>
+                /* Hiển thị sách gợi ý*/
+                document.addEventListener("DOMContentLoaded", function () {
+                    fetch("hienthisachgoiy.php")
+                        .then(response => response.json())
+                        .then(data => {
+                            const container = document.getElementById("sach-goi-y");
+                            container.innerHTML = "";
+
+                            // Lưu dữ liệu sách vào biến toàn cục (lưu theo id_sach)
+                            window.bookData = {};
+                            data.forEach(sach => {
+                                window.bookData[sach.id_sach] = sach;
+                            });
+
+                            data.forEach((sach, index) => {
+                                const activeClass = index === 0 ? "active" : "";
+
+                                const sachElement = `
+                    <div class="carousel-item ${activeClass}">
+                        <div class="container">
+                            <div class="row sach-card align-items-center" 
+                                onclick="openBookModal(${sach.id_sach})"
+                                style="cursor: pointer;">
+                                
+                                <!-- Hình ảnh sách bên trái -->
+                                <div class="col-md-4 text-center">
+                                    <img src="${sach.hinh_anh}" class="img-fluid sach-anh rounded shadow border" 
+                                        alt="${sach.ten_sach}">
+                                </div>
+
+                                <!-- Thông tin sách bên phải -->
+                                <div class="col-md-8 sach-info bg-white p-3 rounded shadow">
+                                    <h4 class="fw-bold">${sach.ten_sach}</h4>
+                                    <p><strong>Tác giả:</strong> ${sach.tac_gia}</p>
+                                    <p><strong>Chủ đề:</strong> ${sach.chu_de}</p>
+                                    <p>${sach.mo_ta_sach}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                                container.innerHTML += sachElement;
+                            });
+                        })
+                        .catch(error => console.error("Lỗi tải sách gợi ý:", error));
+                });
+
+
+
+                function openBookModal(id_sach) {
+                    if (!window.bookData || !window.bookData[id_sach]) {
+                        console.error("Không tìm thấy dữ liệu sách.");
+                        return;
+                    }
+
+                    const sach = window.bookData[id_sach];
+
+                    // Gán ID sách vào modal
+                    const modal = document.getElementById("bookModal");
+                    modal.setAttribute("data-id", id_sach);
+
+                    // Hiển thị thông tin sách trong modal
+                    document.getElementById("bookModalLabel").innerText = sach.ten_sach || "Chưa có thông tin";
+                    document.getElementById("modalImage").src = sach.hinh_anh || "placeholder.png";
+                    document.getElementById("modalAuthor").innerText = sach.tac_gia || "Không xác định";
+                    document.getElementById("modalYear").innerText = sach.nam_xuat_ban || "Chưa có thông tin";
+                    document.getElementById("modalQuantity").innerText = sach.so_luong || "Không xác định";
+                    document.getElementById("modalViews").innerText = sach.so_luot_xem || "0";
+                    document.getElementById("modalCategory").innerText = sach.chu_de || "Không rõ";
+
+                    // Hiển thị modal
+                    const myModal = new bootstrap.Modal(modal);
+                    myModal.show();
+                }
+
+
+                /* Hiển thị danh ngôn*/
+                document.addEventListener("DOMContentLoaded", function () {
+                    // Lấy danh ngôn ngẫu nhiên
+                    fetch("getdanhngon.php")
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.danh_ngon) {
+                                document.getElementById("danhNgonText").innerText = `"${data.danh_ngon}"`;
+                            } else {
+                                document.getElementById("danhNgonText").innerText = "Không có danh ngôn nào.";
+                            }
+                        })
+                        .catch(error => console.error("Lỗi tải danh ngôn:", error));
+                });
+
+            </script>
+
+
+
+        </div>
+
+        <script>
+            function openBook() {
+                let modal = document.getElementById("bookModal");
+                let bookId = modal.dataset.id; // Lấy ID sách
+
+                if (!bookId || isNaN(bookId)) {
+                    alert("❌ Lỗi: ID sách không hợp lệ!");
+                    return;
+                }
+
+                console.log("📖 Đang tải nội dung sách với ID:", bookId);
+
+                // Gọi API để lấy nội dung sách
+                fetch(`laynoidungsach.php?id=${bookId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success) {
+                            alert("❌ Không thể tải nội dung sách: " + data.error);
+                            return;
+                        }
+
+                        // Cập nhật nội dung PDF vào iframe
+                        document.getElementById("pdfViewer").src = "data:application/pdf;base64," + data.pdf;
+
+                        // Hiển thị modal đọc sách
+                        new bootstrap.Modal(document.getElementById("pdfModal")).show();
+                    })
+                    .catch(error => {
+                        console.error("❌ Lỗi khi tải sách:", error);
+                        alert("⚠ Lỗi khi kết nối đến máy chủ!");
+                    });
+            }
+        </script>
+
+        <!-- Modal Bootstrap -->
+        <div class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- Mở rộng modal -->
+                <div class="modal-content p-3">
+                    <div class="modal-header">
+                        <h4 class="modal-title fw-bold" id="bookModalLabel"></h4> <!-- Tiêu đề lớn hơn -->
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row align-items-center">
+                            <!-- Hình ảnh bên trái, chiếm 45% -->
+                            <div class="col-md-5 text-center">
+                                <img id="modalImage" src="" class="img-fluid rounded shadow border"
+                                    style="max-width: 100%; height: auto; max-height: 400px;">
+                            </div>
+
+                            <!-- Thông tin sách bên phải, chiếm 55% -->
+                            <div class="col-md-7">
+                                <p class="fs-4"><strong>Tác giả:</strong> <span id="modalAuthor"></span></p>
+                                <p class="fs-4"><strong>Năm XB:</strong> <span id="modalYear"></span></p>
+                                <p class="fs-4"><strong>Số lượng:</strong> <span id="modalQuantity"></span></p>
+                                <p class="fs-4"><strong>Lượt xem:</strong> <span id="modalViews"></span></p>
+                                <p class="fs-4"><strong>Chủ đề:</strong> <span id="modalCategory"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-between">
+                        <div>
+                            <button type="button" class="btn btn-lg btn-success" onclick="openBook()">📖 Đọc
+                                ngay</button>
+                            <button type="button" class="btn btn-lg btn-dark">📂 Lưu sách</button>
+                            <!-- Đổi màu icon sang đen -->
+                        </div>
+                        <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal">❌ Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal hiển thị nội dung sách -->
+        <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content" style="height: 95vh;">
+                    <div class="modal-header">
+                        <h4 class="modal-title fw-bold" id="pdfModalLabel">📖 Nội dung sách</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <!-- Nội dung sách -->
+                    <div class="modal-body p-0" style="height: calc(100% - 150px); overflow: hidden;">
+                        <iframe id="pdfViewer" width="100%" height="100%" style="border: none;"></iframe>
+                    </div>
+
+                    <!-- Phần bình luận -->
+                    <div class="p-3 border-top">
+                        <h5 class="fw-bold">📢 Bình luận</h5>
+                        <div id="commentSectionPdf" class="mb-3">
+                            <!-- Danh sách bình luận sẽ hiển thị ở đây -->
+                        </div>
+
+                        <!-- Form nhập bình luận -->
+                        <textarea id="commentInputPdf" class="form-control" rows="2"
+                            placeholder="Nhập bình luận của bạn..."></textarea>
+                        <button class="btn btn-primary mt-2" onclick="addCommentPdf()">Gửi bình luận</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function addCommentPdf() {
+                var commentInput = document.getElementById("commentInputPdf").value.trim();
+                var modal = document.getElementById("pdfModal");
+                var bookId = modal.getAttribute("data-book-id");
+                var username = modal.getAttribute("data-username");
+
+                console.log("Book ID:", bookId);
+                console.log("Username:", username);
+
+                if (!commentInput) {
+                    alert("Vui lòng nhập nội dung bình luận!");
+                    return;
+                }
+                if (!bookId) {
+                    alert("Không xác định được ID sách!");
+                    return;
+                }
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "save_comment.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            var commentSection = document.getElementById("commentSectionPdf");
+                            var newComment = document.createElement("p");
+                            newComment.innerHTML = "<strong>" + username + ":</strong> " + commentInput;
+                            newComment.classList.add("border", "p-2", "rounded", "bg-light");
+                            commentSection.appendChild(newComment);
+
+                            document.getElementById("commentInputPdf").value = "";
+                        } else {
+                            alert("Lỗi khi lưu bình luận: " + response.error);
+                        }
+                    }
+                };
+                xhr.send("id_sach=" + encodeURIComponent(bookId) + "&binh_luan=" + encodeURIComponent(commentInput) + "&username=" + encodeURIComponent(username));
+            }
+        </script>
+
+        <!-- Icons góc dưới bên phải -->
+        <div class="floating-icons">
+            <a href="#" class="icon-btn chat-btn">
+                <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/man-2_icon-icons.com_55041.png"
+                    alt="Cá nhân">
+            </a>
+            <a href="#" class="icon-btn balo-btn" data-bs-toggle="modal" data-bs-target="#baloModal">
+                <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/shoppaymentorderbuy-34_icon-icons.com_73865.png"
+                    alt="Balo">
+            </a>
+            <a href="#" class="icon-btn scroll-top-btn">
+                <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/arrow_circle_up_icon_155797.png"
+                    alt="Lên đầu trang">
+            </a>
+            <a href="#" class="icon-btn scroll-top-btn" data-bs-toggle="modal" data-bs-target="#chatModal">
+                <img src="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/img/social_facebook_messenger_icon-icons.com_66150.png"
+                    alt="Chat">
+            </a>
+        </div>
+
+        <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="chatModalLabel">Chat với AI</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="chat-output" class="border p-3 mb-3" style="height: 250px; overflow-y: auto;"></div>
+                        <div class="input-group">
+                            <input type="text" id="chat-input" class="form-control" placeholder="Nhập tin nhắn...">
+                            <button id="sendMessage" class="btn btn-success">Gửi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const chatOutput = document.getElementById("chat-output");
+                const chatInput = document.getElementById("chat-input");
+                const sendMessage = document.getElementById("sendMessage");
+
+                sendMessage.addEventListener("click", function () {
+                    const userMessage = chatInput.value.trim();
+                    if (userMessage === "") return;
+
+                    // Hiển thị tin nhắn người dùng
+                    chatOutput.innerHTML += `<div><strong>Bạn:</strong> ${userMessage}</div>`;
+                    chatInput.value = "";
+
+                    // Gửi đến server để xử lý AI
+                    fetch("chat_ai.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: userMessage })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            chatOutput.innerHTML += `<div><strong>AI:</strong> ${data.reply}</div>`;
+                            chatOutput.scrollTop = chatOutput.scrollHeight; // Cuộn xuống tin nhắn mới nhất
+                        })
+                        .catch(error => console.error("Lỗi gửi tin nhắn:", error));
+                });
+            });
+        </script>
+
+        <!-- Modal Balo -->
+        <div class="modal fade" id="baloModal" tabindex="-1" aria-labelledby="baloModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content p-3">
+                    <div class="modal-header">
+                        <h4 class="modal-title fw-bold" id="baloModalLabel">Sách đã lưu</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul id="savedBooksList" class="list-group">
+                            <!-- Danh sách sách sẽ hiển thị ở đây -->
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal"> Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                loadSavedBooks(); // Gọi hàm tải sách khi trang tải xong
+
+                // Sự kiện khi bấm nút "Thêm vào balo"
+                document.addEventListener("click", function (event) {
+                    if (!event.target.classList.contains("btn-dark")) return;
+
+                    let modal = event.target.closest(".modal");
+                    if (!modal) return;
+
+                    let title, author, year, imageSrc;
+                    if (modal.id === "bookModal") {
+                        title = document.getElementById("bookModalLabel").innerText;
+                        author = document.getElementById("modalAuthor").innerText;
+                        year = document.getElementById("modalYear").innerText;
+                        imageSrc = document.getElementById("modalImage").src;
+                    } else if (modal.id === "hotBookModal") {
+                        title = document.getElementById("hotBookModalLabel").innerText;
+                        author = document.getElementById("hotModalAuthor").innerText;
+                        year = document.getElementById("hotModalYear").innerText;
+                        imageSrc = document.getElementById("hotModalImage").src;
+                    } else {
+                        return;
+                    }
+
+                    const savedBooksList = document.getElementById("savedBooksList");
+
+                    // ❌ Kiểm tra nếu sách đã tồn tại trong danh sách thì không thêm nữa
+                    if ([...savedBooksList.children].some(li => li.dataset.title === title)) {
+                        alert("Sách đã tồn tại trong balo!");
+                        return;
+                    }
+
+                    // ✅ Thêm sách vào danh sách hiển thị
+                    const listItem = document.createElement("li");
+                    listItem.classList.add("list-group-item", "d-flex", "align-items-center", "justify-content-between");
+                    listItem.dataset.title = title;
+
+                    listItem.innerHTML = `
+            <img src="${imageSrc}" class="rounded shadow border" style="width: 50px;">
+            <span><strong>${title}</strong> - ${author} (${year})</span>
+            <div class="saved-book-buttons">
+                <button class="btn btn-sm btn-success">📖 Đọc ngay</button>
+                <button class="btn btn-sm btn-danger">❌ Xóa</button>
+            </div>
+        `;
+                    savedBooksList.appendChild(listItem);
+
+                    alert("Sách đã được lưu vào balo!");
+
+                    // 🔥 Gửi dữ liệu lên server để lưu vào CSDL
+                    fetch("save_book.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ title, author, year, image_url: imageSrc }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === "success") {
+                                console.log("Sách đã được lưu vào CSDL!");
+                            } else {
+                                console.error("Lỗi lưu sách:", data.message);
+                            }
+                        })
+                        .catch(error => console.error("Lỗi gửi yêu cầu:", error));
+                });
+
+                // Sự kiện xóa sách khỏi danh sách
+                document.addEventListener("click", function (event) {
+                    if (!event.target.classList.contains("btn-danger")) return;
+
+                    let listItem = event.target.closest("li");
+                    if (!listItem) return;
+
+                    let title = listItem.dataset.title;
+
+                    if (!confirm(`Bạn có chắc muốn xóa sách "${title}" khỏi balo?`)) return;
+
+                    // ❌ Tránh xóa 2 lần bằng cách kiểm tra sách có tồn tại không trước khi gọi API
+                    if (!document.body.contains(listItem)) {
+                        return;
+                    }
+
+                    fetch("xoa_saved_sach.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ ten_sach: title })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                listItem.remove(); // ✅ Xóa khỏi danh sách hiển thị
+                                alert("Sách đã được xóa khỏi balo!");
+                            } else {
+                                alert("Lỗi khi xóa sách: " + data.message);
+                            }
+                        })
+                        .catch(error => console.error("Lỗi gửi yêu cầu xóa:", error));
+                });
+
+            });
+
+            // Hàm tải sách đã lưu từ CSDL
+            function loadSavedBooks() {
+                fetch("get_saved_books.php")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === "success") {
+                            const books = data.books;
+                            const savedBooksList = document.getElementById("savedBooksList");
+                            savedBooksList.innerHTML = ""; // Xóa danh sách cũ
+
+                            books.forEach(book => {
+                                const listItem = document.createElement("li");
+                                listItem.classList.add("list-group-item", "d-flex", "align-items-center", "justify-content-between");
+                                listItem.dataset.title = book.book_title;
+
+                                listItem.innerHTML = `
+                        <img src="${book.image_url}" class="rounded shadow border" style="width: 50px;">
+                        <span><strong>${book.book_title}</strong> - ${book.author} (${book.year})</span>
+                        <div class="saved-book-buttons">
+                            <button class="btn btn-sm btn-success">📖 Đọc ngay</button>
+                            <button class="btn btn-sm btn-danger">❌ Xóa</button>
+                        </div>
+                    `;
+                                savedBooksList.appendChild(listItem);
+                            });
+                        } else {
+                            console.error("Lỗi: ", data.message);
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi tải sách:", error));
+            }
+        </script>
+
+        <!-- Popup (Modal) Bootstrap -->
+        <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userModalLabel">Thông tin người dùng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Họ Tên:</strong> <span id="popup-ho-ten"></span></p>
+                        <p><strong>Email:</strong> <span id="popup-email"></span></p>
+                        <p><strong>Tài khoản:</strong> <span id="popup-username"></span></p>
+                        <p><strong>Tuổi:</strong> <span id="popup-tuoi"></span></p>
+                        <p><strong>Số điện thoại:</strong> <span id="popup-so-dien-thoai"></span></p>
+                        <p><strong>Địa chỉ:</strong> <span id="popup-dia-chi"></span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="logoutBtn">
+                            Đăng xuất
+                        </button>
+                        <button type="button" class="btn btn-primary" id="editInfoBtn">
+                            Sửa thông tin
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Sửa Thông Tin -->
+        <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editUserModalLabel">Sửa Thông Tin</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editUserForm">
+                            <div class="mb-3">
+                                <label for="editHoTen" class="form-label">Họ Tên</label>
+                                <input type="text" class="form-control" id="editHoTen" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTaiKhoan" class="form-label">Tài Khoản</label>
+                                <input type="text" class="form-control" id="editTaiKhoan" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editMatKhau" class="form-label">Mật Khẩu</label>
+                                <input type="password" class="form-control" id="editMatKhau" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTuoi" class="form-label">Tuổi</label>
+                                <input type="number" class="form-control" id="editTuoi" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editSoDienThoai" class="form-label">Số Điện Thoại</label>
+                                <input type="text" class="form-control" id="editSoDienThoai" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editDiaChi" class="form-label">Địa Chỉ</label>
+                                <input type="text" class="form-control" id="editDiaChi" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let editBtn = document.getElementById("editInfoBtn");
+
+                if (!editBtn) {
+                    console.error("Không tìm thấy nút #editInfoBtn.");
+                    return;
+                }
+
+                editBtn.addEventListener("click", function () {
+                    let hoTenElem = document.getElementById("popup-ho-ten");
+                    let emailElem = document.getElementById("popup-email");
+                    let usernameElem = document.getElementById("popup-username");
+                    let tuoiElem = document.getElementById("popup-tuoi");
+                    let soDienThoaiElem = document.getElementById("popup-so-dien-thoai");
+                    let diaChiElem = document.getElementById("popup-dia-chi");
+
+                    if (!hoTenElem || !emailElem || !usernameElem || !tuoiElem || !soDienThoaiElem || !diaChiElem) {
+                        console.error("Không tìm thấy một trong các phần tử thông tin người dùng.");
+                        return;
+                    }
+
+                    let editHoTen = document.getElementById("editHoTen");
+                    let editTaiKhoan = document.getElementById("editTaiKhoan");
+                    let editMatKhau = document.getElementById("editMatKhau");
+                    let editTuoi = document.getElementById("editTuoi");
+                    let editEmail = document.getElementById("editEmail");
+                    let editSoDienThoai = document.getElementById("editSoDienThoai");
+                    let editDiaChi = document.getElementById("editDiaChi");
+
+                    if (!editHoTen || !editTaiKhoan || !editMatKhau || !editTuoi || !editEmail || !editSoDienThoai || !editDiaChi) {
+                        console.error("Không tìm thấy một trong các phần tử form chỉnh sửa.");
+                        return;
+                    }
+
+                    editHoTen.value = hoTenElem.textContent.trim();
+                    editTaiKhoan.value = usernameElem.textContent.trim();
+                    editMatKhau.value = "";
+                    editTuoi.value = tuoiElem.textContent.trim();
+                    editEmail.value = emailElem.textContent.trim();
+                    editSoDienThoai.value = soDienThoaiElem.textContent.trim();
+                    editDiaChi.value = diaChiElem.textContent.trim();
+
+                    let editModalElem = document.getElementById("editUserModal");
+                    if (!editModalElem) {
+                        console.error("Không tìm thấy modal #editUserModal.");
+                        return;
+                    }
+
+                    let editModal = new bootstrap.Modal(editModalElem);
+                    editModal.show();
+                });
+
+                let editUserForm = document.getElementById("editUserForm");
+                if (!editUserForm) {
+                    console.error("Không tìm thấy form #editUserForm.");
+                    return;
+                }
+
+                editUserForm.addEventListener("submit", function (event) {
+                    event.preventDefault();
+
+                    let updatedUserInfo = {
+                        taiKhoan: document.getElementById("editTaiKhoan").value.trim(),
+                        matKhau: document.getElementById("editMatKhau").value.trim(),
+                        hoTen: document.getElementById("editHoTen").value.trim(),
+                        tuoi: document.getElementById("editTuoi").value.trim(),
+                        email: document.getElementById("editEmail").value.trim(),
+                        soDienThoai: document.getElementById("editSoDienThoai").value.trim(),
+                        diaChi: document.getElementById("editDiaChi").value.trim(),
+                    };
+
+                    console.log("Dữ liệu gửi đi:", updatedUserInfo);
+
+                    fetch("suathongtin.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(updatedUserInfo),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("Phản hồi từ server:", data);
+                            if (data.success) {
+                                alert("Cập nhật thông tin thành công!");
+                                // Cập nhật nội dung modal ngay lập tức
+                                document.getElementById("popup-ho-ten").innerText = updatedUserInfo.hoTen;
+                                document.getElementById("popup-email").innerText = updatedUserInfo.email;
+                                document.getElementById("popup-username").innerText = updatedUserInfo.taiKhoan;
+                                document.getElementById("popup-tuoi").innerText = updatedUserInfo.tuoi;
+                                document.getElementById("popup-so-dien-thoai").innerText = updatedUserInfo.soDienThoai;
+                                document.getElementById("popup-dia-chi").innerText = updatedUserInfo.diaChi;
+
+                                // Cập nhật cookie để giữ thông tin mới
+                                document.cookie = `hoTen=${encodeURIComponent(updatedUserInfo.hoTen)}; path=/`;
+                                document.cookie = `email=${encodeURIComponent(updatedUserInfo.email)}; path=/`;
+                                document.cookie = `username=${encodeURIComponent(updatedUserInfo.taiKhoan)}; path=/`;
+                                document.cookie = `tuoi=${encodeURIComponent(updatedUserInfo.tuoi)}; path=/`;
+                                document.cookie = `soDienThoai=${encodeURIComponent(updatedUserInfo.soDienThoai)}; path=/`;
+                                document.cookie = `diaChi=${encodeURIComponent(updatedUserInfo.diaChi)}; path=/`;
+                            } else {
+                                alert("Lỗi: " + data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Lỗi khi gửi yêu cầu:", error);
+                            alert("Có lỗi xảy ra khi cập nhật. Vui lòng thử lại.");
+                        });
+                });
+            });
+
+
+            // Đợi DOM load trước khi chạy script
+            document.addEventListener("DOMContentLoaded", function () {
+                // Hàm lấy giá trị từ cookie
+                function getCookie(name) {
+                    let cookies = document.cookie.split("; ");
+                    for (let i = 0; i < cookies.length; i++) {
+                        let parts = cookies[i].split("=");
+                        if (parts[0] === name) {
+                            return decodeURIComponent(parts[1]);
+                        }
+                    }
+                    return ""; // Trả về chuỗi rỗng nếu không tìm thấy
+                }
+
+                // Hiển thị thông tin người dùng khi mở modal
+                let chatButton = document.querySelector(".chat-btn");
+                if (chatButton) {
+                    chatButton.addEventListener("click", function () {
+                        let hoTenEl = document.getElementById("popup-ho-ten");
+                        let emailEl = document.getElementById("popup-email");
+                        let usernameEl = document.getElementById("popup-username");
+                        let tuoiEl = document.getElementById("popup-tuoi");
+                        let soDienThoaiEl = document.getElementById("popup-so-dien-thoai");
+                        let diaChiEl = document.getElementById("popup-dia-chi");
+
+                        // Kiểm tra xem các phần tử có tồn tại trước khi gán giá trị
+                        if (hoTenEl && emailEl && usernameEl && tuoiEl && soDienThoaiEl && diaChiEl) {
+                            hoTenEl.innerText = getCookie("hoTen") || "Chưa đăng nhập";
+                            emailEl.innerText = getCookie("email") || "Chưa đăng nhập";
+                            usernameEl.innerText = getCookie("username") || "Chưa đăng nhập";
+                            tuoiEl.innerText = getCookie("tuoi") || "Chưa có dữ liệu";
+                            soDienThoaiEl.innerText = getCookie("soDienThoai") || "Chưa có dữ liệu";
+                            diaChiEl.innerText = getCookie("diaChi") || "Chưa có dữ liệu";
+                        } else {
+                            console.error("Không tìm thấy phần tử hiển thị thông tin người dùng.");
+                        }
+                    });
+                } else {
+                    console.error("Không tìm thấy nút mở modal. Kiểm tra lại class.");
+                }
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+                let logoutBtn = document.getElementById("logoutBtn");
+
+                if (!logoutBtn) {
+                    console.error("Không tìm thấy nút đăng xuất.");
+                    return;
+                }
+
+                logoutBtn.addEventListener("click", function () {
+                    if (!document.cookie.includes("username=")) {
+                        alert("Bạn chưa đăng nhập!");
+                        return;
+                    }
+
+                    // Hàm xóa cookie
+                    function deleteCookie(name) {
+                        document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                        document.cookie = name + "=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                    }
+
+                    // Xóa danh sách cookie liên quan đến tài khoản
+                    ["username", "hoTen", "email", "tuoi", "soDienThoai", "diaChi"].forEach(deleteCookie);
+
+                    // Log để kiểm tra
+                    console.log("Cookies sau khi xóa:", document.cookie);
+
+                    // Cập nhật giao diện (tải lại trang)
+                    alert("Bạn đã đăng xuất thành công!");
+                    window.location.reload();
+                });
+            });
+
+
+
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelector(".chat-btn").addEventListener("click", function (event) {
+                    event.preventDefault(); // Ngăn tải lại trang
+                    var myModal = new bootstrap.Modal(document.getElementById('userModal'));
+                    myModal.show();
+                });
+            });
+        </script>
+    </main>
+    <!-- Footer -->
+    <footer class="footer" style="background-color:#873e23; height: 200px;">
+    </footer>
+</body>
+
+</html>

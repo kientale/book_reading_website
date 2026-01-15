@@ -1,0 +1,192 @@
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 51
+    [tai_khoan] => user51
+    [mat_khau] => 123456
+    [ho_ten] => Nguyen Van A
+    [tuoi] => 21
+    [email] => user1@example.com
+    [so_dien_thoai] => 0987654323
+    [dia_chi] => Hưng Yên
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 32
+    [tai_khoan] => user21
+    [mat_khau] => 123456
+    [ho_ten] => Nguyen Van A
+    [tuoi] => 25
+    [email] => user1@example.com
+    [so_dien_thoai] => 0123456789
+    [dia_chi] => Hà Nội
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 30
+    [tai_khoan] => user30
+    [mat_khau] => 123456
+    [ho_ten] => Do Van J
+    [tuoi] => 26
+    [email] => user10@example.com
+    [so_dien_thoai] => 0923456781
+    [dia_chi] => Vĩnh Long
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 51
+    [tai_khoan] => user51
+    [mat_khau] => 123456
+    [ho_ten] => Nguyen Van A
+    [tuoi] => 21
+    [email] => user1@example.com
+    [so_dien_thoai] => 0987654323
+    [dia_chi] => Hưng Yên
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 32
+    [tai_khoan] => user21
+    [mat_khau] => 123456
+    [ho_ten] => Nguyen Van A
+    [tuoi] => 25
+    [email] => user1@example.com
+    [so_dien_thoai] => 0123456789
+    [dia_chi] => Hà Nội
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 30
+    [tai_khoan] => user30
+    [mat_khau] => 123456
+    [ho_ten] => Do Van J
+    [tuoi] => 26
+    [email] => user10@example.com
+    [so_dien_thoai] => 0923456781
+    [dia_chi] => Vĩnh Long
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 51
+    [tai_khoan] => user51
+    [mat_khau] => 123456
+    [ho_ten] => Nguyen Van A
+    [tuoi] => 21
+    [email] => user1@example.com
+    [so_dien_thoai] => 0987654323
+    [dia_chi] => Hưng Yên
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 32
+    [tai_khoan] => user21
+    [mat_khau] => 123456
+    [ho_ten] => Nguyen Van A
+    [tuoi] => 25
+    [email] => user1@example.com
+    [so_dien_thoai] => 0123456789
+    [dia_chi] => Hà Nội
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 30
+    [tai_khoan] => user30
+    [mat_khau] => 123456
+    [ho_ten] => Do Van J
+    [tuoi] => 26
+    [email] => user10@example.com
+    [so_dien_thoai] => 0923456781
+    [dia_chi] => Vĩnh Long
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 51
+    [tai_khoan] => user51
+    [mat_khau] => 123456
+    [ho_ten] => Nguyen Van A
+    [tuoi] => 21
+    [email] => user1@example.com
+    [so_dien_thoai] => 0987654323
+    [dia_chi] => Hưng Yên
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 32
+    [tai_khoan] => user21
+    [mat_khau] => 123456
+    [ho_ten] => Nguyen Van A
+    [tuoi] => 25
+    [email] => user1@example.com
+    [so_dien_thoai] => 0123456789
+    [dia_chi] => Hà Nội
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 30
+    [tai_khoan] => user30
+    [mat_khau] => 123456
+    [ho_ten] => Do Van J
+    [tuoi] => 26
+    [email] => user10@example.com
+    [so_dien_thoai] => 0923456781
+    [dia_chi] => Vĩnh Long
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 70
+    [tai_khoan] => Tien
+    [mat_khau] => admin
+    [ho_ten] => admin
+    [tuoi] => 21
+    [email] => admin@gmail.com
+    [so_dien_thoai] => 0987654323
+    [dia_chi] => Hưng Yên
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 71
+    [tai_khoan] => user1
+    [mat_khau] => password1
+    [ho_ten] => Nguyen Van A
+    [tuoi] => 27
+    [email] => user1@example.com
+    [so_dien_thoai] => 0123456789
+    [dia_chi] => Hà Nội
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 70
+    [tai_khoan] => Tien
+    [mat_khau] => admin
+    [ho_ten] => admin
+    [tuoi] => 21
+    [email] => admin@gmail.com
+    [so_dien_thoai] => 0987654323
+    [dia_chi] => Hưng Yên
+)
+
+Thêm user: Array
+(
+    [ma_nguoi_dung] => 71
+    [tai_khoan] => user1
+    [mat_khau] => password1
+    [ho_ten] => Nguyen Van A
+    [tuoi] => 27
+    [email] => user1@example.com
+    [so_dien_thoai] => 0123456789
+    [dia_chi] => Hà Nội
+)
+

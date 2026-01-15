@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Thư viện Online</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap JavaScript (Popper.js đi kèm) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet"
+        href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Thongke/thongke.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+
+                <!-- Menu chính -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://short.com.vn/VSYd">Quản lý người
+                            dùng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-sach/quanlysach.html">Quản
+                            lý sách</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-tintuc/quanlytintuc.html">Quản
+                            lý tin tức</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-chude/quanlychude.html">Quản
+                            lý chủ đề</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Lienhe-hotro/lienhe_hotro.html">Liên
+                            hệ hỗ trợ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Thongke/thongke.html">Thống
+                            kê</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/BaoCao/baocao.html">Báo
+                            cáo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-chude/logout.php">Đăng xuất</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <section id="section-nguoidung" class="container mt-5">
+            <h2 class="text-center mb-4 fw-bold" style="color: white;">Thống kê Người Dùng</h2>
+
+            <!-- HÀNG 1: THỐNG KÊ TỔNG -->
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card text-white bg-primary mb-4 shadow-lg">
+                        <div class="card-body text-center">
+                            <h2 id="totalUsers" class="fw-bold">Đang tải...</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HÀNG 2: BIỂU ĐỒ & BẢN ĐỒ -->
+            <div class="row">
+                <!-- Biểu đồ độ tuổi -->
+                <div class="col-md-6">
+                    <div class="card shadow-lg">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Thống kê Độ Tuổi</h5>
+                            <canvas id="ageChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bản đồ địa chỉ -->
+                <div class="col-md-6">
+                    <div class="card shadow-lg">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Phân bố Địa Chỉ Người Dùng</h5>
+                            <div id="map"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container mt-4" style="margin-bottom: 50px;">
+            <h1 class="text-center fw-bold" style="color: white; margin-top: 100px;">Thống kê Sách</h1>
+
+            <!-- Tổng số sách -->
+            <div class="card text-white bg-primary text-center my-3">
+                <div class="card-body">
+                    <h4 class="card-title">Tổng số sách: <span id="totalBooks">...</span></h4>
+                    <h5 class="card-text">Số lượt xem trung bình: <span id="avgViews">...</span></h5>
+                </div>
+            </div>
+
+            <!-- Sách đặc biệt -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card bg-success text-white text-center my-3">
+                        <div class="card-body">
+                            <h5 class="card-title">🔥 Sách Được Xem Nhiều Nhất</h5>
+                            <p class="card-text" id="mostViewedBook">...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-warning text-dark text-center my-3">
+                        <div class="card-body">
+                            <h5 class="card-title">📉 Sách Ít Được Xem Nhất</h5>
+                            <p class="card-text" id="leastViewedBook">...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card bg-info text-white text-center my-3">
+                        <div class="card-body">
+                            <h5 class="card-title">📅 Sách Mới Xuất Bản Nhất</h5>
+                            <p class="card-text" id="newestBook">...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-secondary text-white text-center my-3">
+                        <div class="card-body">
+                            <h5 class="card-title">📜 Sách Cũ Nhất</h5>
+                            <p class="card-text" id="oldestBook">...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <!-- Biểu đồ số sách xuất bản theo năm -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <h5 class="text-center">📅 Số Sách Xuất Bản Theo Năm</h5>
+                        <canvas id="booksByYearChart" style="min-height: 500px;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Biểu đồ số sách theo chủ đề -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <h5 class="text-center">📖 Số Sách Theo Chủ Đề</h5>
+                        <canvas id="booksByCategoryChart" style="max-height: 500px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                fetchUserData();  // Gọi thống kê người dùng
+                fetchBookData();  // Gọi thống kê sách
+            });
+
+            async function fetchUserData() {
+                try {
+                    const response = await fetch("thongke_taikhoan.php");
+                    const data = await response.json();
+
+                    console.log("Dữ liệu thống kê người dùng:", data); // Debug
+
+                    if (!data.success) {
+                        throw new Error("Lỗi lấy dữ liệu thống kê người dùng");
+                    }
+
+                    // Hiển thị tổng số người dùng
+                    const totalUsersElement = document.getElementById("totalUsers");
+                    if (totalUsersElement) {
+                        totalUsersElement.innerText = `Tổng số người dùng: ${data.total_users}`;
+                    } else {
+                        console.warn("Phần tử #totalUsers không tồn tại trong HTML.");
+                    }
+
+                    createAgeChart(data.age_groups);
+                    createMap(data.address_counts);
+
+                } catch (error) {
+                    console.error("Lỗi khi lấy dữ liệu người dùng:", error);
+                }
+            }
+
+            async function fetchBookData() {
+                try {
+                    const response = await fetch("thongke_sach.php");
+                    const data = await response.json();
+
+                    console.log("Dữ liệu thống kê sách:", data); // Debug
+
+                    if (!data.success) {
+                        throw new Error("Lỗi lấy dữ liệu thống kê sách");
+                    }
+
+                    // Hiển thị tổng số sách và lượt xem trung bình
+                    document.getElementById("totalBooks").innerText = data.total_books;
+                    document.getElementById("avgViews").innerText = data.avg_views;
+
+                    updateBooksByYearChart(data.books_by_year);
+                    updateBooksByCategoryChart(data.books_by_category);
+
+                } catch (error) {
+                    console.error("Lỗi khi lấy dữ liệu sách:", error);
+                }
+            }
+
+            function createAgeChart(ageGroups) {
+                const ctx = document.getElementById("ageChart");
+                if (!ctx) {
+                    console.warn("Phần tử #ageChart không tồn tại trong HTML.");
+                    return;
+                }
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(ageGroups),
+                        datasets: [{
+                            label: 'Số lượng người',
+                            data: Object.values(ageGroups),
+                            backgroundColor: ['#2596be', '#e28743', '#abdbe3', '#eab676']
+                        }]
+                    },
+                    options: { responsive: true }
+                });
+            }
+
+            function createMap(addressCounts) {
+                const mapElement = document.getElementById("map");
+                if (!mapElement) {
+                    console.warn("Phần tử #map không tồn tại trong HTML.");
+                    return;
+                }
+
+                const locations = {
+                    "Hồ Chí Minh": [10.7769, 106.7009],
+                    "Hà Nội": [21.0285, 105.8542],
+                    "Bình Dương": [10.9804, 106.6519],
+                    "Cà Mau": [9.1761, 105.1502],
+                    "Đồng Nai": [10.9447, 106.8243],
+                    "Bắc Giang": [21.2730, 106.1946],
+                    "Cần Thơ": [10.0452, 105.7469],
+                    "Huế": [16.4637, 107.5909],
+                    "Thái Bình": [20.4505, 106.3400],
+                    "Nghệ An": [19.2336, 104.9200],
+                    "Kon Tum": [14.3498, 108.0000],
+                    "Hưng Yên": [20.6461, 106.0510],
+                    "Hải Phòng": [20.8449, 106.6881],
+                    "Nam Định": [20.4388, 106.1621],
+                    "Thanh Hóa": [19.8067, 105.7852],
+                    "Quảng Nam": [15.5394, 108.0191],
+                    "Đà Nẵng": [16.0544, 108.2022],
+                    "Quảng Ngãi": [15.1205, 108.7923],
+                    "Lâm Đồng": [11.9404, 108.4583],
+                    "Gia Lai": [13.8074, 107.6880],
+                    "Bình Thuận": [11.0904, 108.2675],
+                    "Phú Yên": [13.0882, 109.0929],
+                    "Khánh Hòa": [12.2388, 109.1962]
+                };
+
+                let map = L.map('map').setView([15.8700, 107.8100], 6);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+                Object.entries(addressCounts).forEach(([address, count]) => {
+                    address = address.trim();
+                    if (locations[address]) {
+                        let marker = L.marker(locations[address]).addTo(map);
+                        marker.bindPopup(`<b>${address}</b><br>${count} người dùng`);
+                    } else {
+                        console.warn(`Không tìm thấy tọa độ cho: ${address}`);
+                    }
+                });
+            }
+
+            document.addEventListener("DOMContentLoaded", fetchBookData);
+
+            async function fetchBookData() {
+                try {
+                    // Lấy dữ liệu từ API PHP
+                    const response = await fetch("thongke_sach.php");
+                    const data = await response.json();
+
+                    if (!data.success) {
+                        throw new Error("Lỗi lấy dữ liệu từ API");
+                    }
+
+                    // Hiển thị tổng số sách và lượt xem TB
+                    document.getElementById("totalBooks").innerText = data.total_books;
+                    document.getElementById("avgViews").innerText = data.avg_views;
+
+                    // Hiển thị sách đặc biệt
+                    document.getElementById("mostViewedBook").innerText = `${data.most_viewed_book.ten_sach} (${data.most_viewed_book.so_luot_xem} lượt xem)`;
+                    document.getElementById("leastViewedBook").innerText = `${data.least_viewed_book.ten_sach} (${data.least_viewed_book.so_luot_xem} lượt xem)`;
+                    document.getElementById("newestBook").innerText = `${data.newest_book.ten_sach} (Xuất bản: ${data.newest_book.nam_xuat_ban})`;
+                    document.getElementById("oldestBook").innerText = `${data.oldest_book.ten_sach} (Xuất bản: ${data.oldest_book.nam_xuat_ban})`;
+
+                    // Cập nhật biểu đồ
+                    updateBooksByYearChart(data.books_by_year);
+                    updateBooksByCategoryChart(data.books_by_category);
+
+                } catch (error) {
+                    console.error("Lỗi khi lấy dữ liệu:", error);
+                }
+            }
+
+            function updateBooksByYearChart(booksByYear) {
+                const ctx = document.getElementById("booksByYearChart").getContext("2d");
+                new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels: Object.keys(booksByYear),
+                        datasets: [{
+                            label: "Số sách xuất bản",
+                            data: Object.values(booksByYear),
+                            backgroundColor: "rgba(54, 162, 235, 0.7)"
+                        }]
+                    },
+                    options: { responsive: true }
+                });
+            }
+
+            function updateBooksByCategoryChart(booksByCategory) {
+                const ctx = document.getElementById("booksByCategoryChart").getContext("2d");
+                new Chart(ctx, {
+                    type: "pie",
+                    data: {
+                        labels: Object.keys(booksByCategory),
+                        datasets: [{
+                            data: Object.values(booksByCategory),
+                            backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"]
+                        }]
+                    },
+                    options: { responsive: true }
+                });
+            }
+
+
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </main>
+</body>
+
+</html>

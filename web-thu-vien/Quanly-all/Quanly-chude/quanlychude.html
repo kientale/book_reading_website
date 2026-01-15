@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Thư viện Online</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap JavaScript (Popper.js đi kèm) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script>
+
+        function resetChuDeDisplay() {
+            console.log("🔄 resetChuDeDisplay() được gọi!");
+
+            // Xóa nội dung ô tìm kiếm
+            document.getElementById("chuDeSearchInput").value = "";
+
+            // Đưa bộ lọc về giá trị mặc định (nếu có)
+            const filterElement = document.getElementById("filterType");
+            if (filterElement) {
+                filterElement.selectedIndex = 0;
+            }
+
+            // Xóa dữ liệu hiện tại trong bảng
+            const chuDeTableBody = document.getElementById("chuDeTableBody");
+            chuDeTableBody.innerHTML = "";
+
+            // Gọi lại hàm để tải danh sách chủ đề ban đầu
+            fetchChuDe();
+        }
+
+
+        // Hiển thị thông tin vào bảng
+        // Hiển thị thông tin vào bảng chủ đề
+        document.addEventListener("DOMContentLoaded", function () {
+            fetchChuDe();
+        });
+
+        function fetchChuDe() {
+            fetch("quanlychude.php") // Gọi API lấy dữ liệu chủ đề
+                .then(response => response.json())
+                .then(chuDes => {
+                    const chuDeTableBody = document.getElementById("chuDeTableBody");
+                    chuDeTableBody.innerHTML = ""; // Xóa dữ liệu cũ
+
+                    if (!Array.isArray(chuDes)) {
+                        console.error("Lỗi: Dữ liệu không hợp lệ", chuDes);
+                        chuDeTableBody.innerHTML = "<tr><td colspan='4'>Lỗi khi tải dữ liệu.</td></tr>";
+                        return;
+                    }
+
+                    chuDes.forEach(chuDe => {
+                        const row = document.createElement("tr");
+
+                        row.innerHTML = `
+                    <td>${chuDe.id_chu_de}</td>
+                    <td>${chuDe.ten_chu_de}</td>
+                    <td>${chuDe.mo_ta}</td>
+                    <td style="background: #76b5c5">
+                        <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" 
+                            data-bs-target="#editChuDeModal" onclick="setEditChuDe(${chuDe.id_chu_de})">
+                            Sửa
+                        </button>
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#deleteChuDeModal"
+                            onclick="setDeleteChuDe(this.getAttribute('data-id'))"
+                            data-id="${chuDe.id_chu_de}">
+                            Xóa
+                        </button>
+                    </td>
+                `;
+
+                        chuDeTableBody.appendChild(row);
+                    });
+
+                    console.log("Đã tải xong danh sách chủ đề.");
+                })
+                .catch(error => {
+                    console.error("Lỗi khi tải dữ liệu:", error);
+                    document.getElementById("chuDeTableBody").innerHTML = "<tr><td colspan='4'>Lỗi kết nối đến server.</td></tr>";
+                });
+        }
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("DOM Loaded, initializing event listeners for chủ đề modals...");
+
+            // Hàm reset các trường nhập liệu trong một modal cụ thể
+            function resetFormFields(modalId, fieldIds) {
+                console.log(`Resetting form fields for modal: ${modalId}`);
+                fieldIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        if (el.tagName === "SELECT") {
+                            el.selectedIndex = 0; // Đặt dropdown về giá trị mặc định
+                        } else {
+                            el.value = ""; // Xóa nội dung ô nhập
+                        }
+                    } else {
+                        console.warn(`Không tìm thấy phần tử với id "${id}"`);
+                    }
+                });
+            }
+
+            // Hàm thiết lập sự kiện cho modal
+            function setupModalEventHandlers(modalId, fieldIds, clearBtnId) {
+                // Sự kiện "Xóa thông tin"
+                const clearBtn = document.getElementById(clearBtnId);
+                if (clearBtn) {
+                    console.log(`Found '${clearBtnId}' button, adding event listener...`);
+                    clearBtn.addEventListener("click", () => {
+                        console.log(`Clear button clicked for modal: ${modalId}`);
+                        resetFormFields(modalId, fieldIds);
+                    });
+                } else {
+                    console.error(`Không tìm thấy nút '${clearBtnId}'. Kiểm tra lại HTML.`);
+                }
+
+                // Reset form khi modal bị đóng
+                const modalEl = document.getElementById(modalId);
+                if (modalEl) {
+                    modalEl.addEventListener("hidden.bs.modal", () => {
+                        console.log(`Modal hidden event triggered for: ${modalId}`);
+                        resetFormFields(modalId, fieldIds);
+                    });
+                } else {
+                    console.error(`Không tìm thấy modal với id '${modalId}'.`);
+                }
+            }
+
+            // Danh sách cấu hình cho các modal chủ đề
+            const chuDeModalConfigs = [
+                {
+                    modalId: "chuDeModal",
+                    fieldIds: ["idChuDe", "tenChuDe", "moTa"], // Trường nhập cho modal thêm chủ đề
+                    clearBtnId: "clearChuDe"
+                },
+                {
+                    modalId: "searchChuDeModal",
+                    fieldIds: ["searchMaChuDe"], // Trường nhập cho modal tìm kiếm chủ đề
+                    clearBtnId: "clearSearchChuDeButton"
+                }
+            ];
+
+            // Áp dụng cấu hình cho từng modal
+            chuDeModalConfigs.forEach(config => {
+                setupModalEventHandlers(config.modalId, config.fieldIds, config.clearBtnId);
+            });
+        });
+
+
+
+
+        // Thêm chủ đề
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("saveChuDe").addEventListener("click", async () => {
+                const idChuDe = document.getElementById("idChuDe").value.trim();
+                const tenChuDe = document.getElementById("tenChuDe").value.trim();
+                const moTa = document.getElementById("moTa").value.trim();
+
+                // Kiểm tra rỗng
+                if (!idChuDe || !tenChuDe || !moTa) {
+                    alert("Vui lòng nhập đầy đủ thông tin!");
+                    return;
+                }
+
+                // Kiểm tra ID chủ đề đã tồn tại
+                const response = await fetch(`kiemtra_id.php?idChuDe=${idChuDe}`);
+                const result = await response.json();
+
+                if (result.exists) {
+                    alert("ID chủ đề đã tồn tại!");
+                    return;
+                }
+
+                // Nếu hợp lệ, gửi dữ liệu thêm chủ đề
+                const chuDeData = { idChuDe, tenChuDe, moTa };
+
+                fetch("themchude.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(chuDeData)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Thêm chủ đề thành công!");
+                            location.reload();
+                        } else {
+                            alert("Lỗi: " + data.error);
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi gửi dữ liệu:", error));
+            });
+        });
+
+
+
+
+        /* Sửa chủ đề */
+        /* Hàm thiết lập dữ liệu vào modal sửa chủ đề */
+        function setEditChuDe(idChuDe) {
+            fetch("quanlychude.php")
+                .then(response => response.json())
+                .then(chuDes => {
+                    const chuDe = chuDes.find(chuDe => chuDe.id_chu_de == idChuDe);
+                    if (!chuDe) {
+                        alert("Không tìm thấy chủ đề với ID: " + idChuDe);
+                        return;
+                    }
+                    document.getElementById("editIdChuDe").value = chuDe.id_chu_de;
+                    document.getElementById("editTenChuDe").value = chuDe.ten_chu_de;
+                })
+                .catch(error => console.error("Lỗi khi tải dữ liệu chủ đề:", error));
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            /* Hàm reset form khi đóng modal */
+            function resetEditChuDeForm() {
+                document.getElementById("editIdChuDe").value = "";
+                document.getElementById("editTenChuDe").value = "";
+            }
+
+            /* Gán sự kiện reset khi nhấn nút Xóa thông tin */
+            document.getElementById("clearEditChuDe")?.addEventListener("click", resetEditChuDeForm);
+
+            /* Gán sự kiện reset khi modal bị đóng */
+            document.getElementById("editChuDeModal")?.addEventListener("hidden.bs.modal", resetEditChuDeForm);
+
+            /* Gán sự kiện lưu dữ liệu khi nhấn Lưu thay đổi */
+            document.getElementById("saveEditChuDe")?.addEventListener("click", function () {
+                const idChuDe = document.getElementById("editIdChuDe").value.trim();
+                const tenChuDe = document.getElementById("editTenChuDe").value.trim();
+
+                if (!tenChuDe) {
+                    alert("Vui lòng nhập tên chủ đề!");
+                    return;
+                }
+
+                fetch("suachude.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ idChuDe, tenChuDe })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Cập nhật chủ đề thành công!");
+                            location.reload();
+                        } else {
+                            alert("Cập nhật thất bại! " + (data.error || ""));
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Lỗi khi cập nhật chủ đề:", error);
+                        alert("Có lỗi xảy ra, vui lòng thử lại!");
+                    });
+            });
+        });
+
+
+
+
+
+        /* Xóa chủ đề */
+        document.addEventListener("DOMContentLoaded", function () {
+            function setDeleteChuDe(idChuDe) {
+                console.log("Chủ đề cần xóa:", idChuDe);
+
+                // Kiểm tra input ẩn lưu ID chủ đề
+                const deleteInput = document.getElementById("deleteIdChuDe");
+                if (deleteInput) {
+                    deleteInput.value = idChuDe;
+                } else {
+                    console.error("Không tìm thấy input ẩn #deleteIdChuDe.");
+                }
+            }
+
+            // Xử lý sự kiện khi nhấn "Xác nhận xóa"
+            document.getElementById("confirmDeleteChuDe").addEventListener("click", function () {
+                const deleteInput = document.getElementById("deleteIdChuDe");
+                const idChuDe = deleteInput ? deleteInput.value.trim() : "";
+
+                if (!idChuDe) {
+                    alert("Lỗi: Không tìm thấy mã chủ đề cần xóa!");
+                    return;
+                }
+
+                if (!confirm("Bạn có chắc chắn muốn xóa chủ đề này?")) {
+                    return;
+                }
+
+                fetch("xoachude.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ idChuDe: idChuDe }) // Gửi idChuDe đến API
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Xóa chủ đề thành công!");
+                            location.reload();
+                        } else {
+                            alert("Lỗi: " + data.error);
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi xóa chủ đề:", error));
+            });
+
+            // Đưa setDeleteChuDe vào phạm vi toàn cục để gọi từ HTML
+            window.setDeleteChuDe = setDeleteChuDe;
+        });
+
+
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchChuDeButton = document.getElementById("searchChuDeButton");
+            const clearSearchChuDeButton = document.getElementById("clearSearchChuDeButton");
+            const searchChuDeInput = document.getElementById("searchMaChuDe");
+            const searchChuDeResult = document.getElementById("searchChuDeResult");
+
+            // Sự kiện cho nút Tìm kiếm
+            searchChuDeButton.addEventListener("click", function () {
+                const maChuDe = searchChuDeInput.value.trim();
+
+                if (!maChuDe) {
+                    alert("Vui lòng nhập mã chủ đề!");
+                    return;
+                }
+
+                fetch("timkiemchude.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id_chu_de: maChuDe })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success || !data.chuDe) {  // Đổi từ data.chu_de thành data.chuDe
+                            searchChuDeResult.innerHTML = `<p class="text-danger">${data.error || "Không tìm thấy chủ đề!"}</p>`;
+                        } else {
+                            const chuDe = data.chuDe;
+                            searchChuDeResult.innerHTML = `
+                    <table class="table table-bordered mt-3">
+                        <tr><th>ID Chủ Đề</th><td>${chuDe.id_chu_de || "Không có dữ liệu"}</td></tr>
+                        <tr><th>Tên Chủ Đề</th><td>${chuDe.ten_chu_de || "Không có dữ liệu"}</td></tr>
+                        <tr><th>Mô Tả</th><td>${chuDe.mo_ta || "Không có dữ liệu"}</td></tr>
+                    </table>
+                `;
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi tìm kiếm chủ đề:", error));
+            });
+
+            // Sự kiện cho nút Xóa thông tin
+            clearSearchChuDeButton.addEventListener("click", function () {
+                searchChuDeInput.value = "";
+                searchChuDeResult.innerHTML = "";
+                console.log("Thông tin tìm kiếm đã được xóa.");
+            });
+        });
+
+
+
+
+        function fetchFilteredChuDe() {
+            const keyword = document.getElementById("chuDeSearchInput").value.trim();
+            const chuDeTableBody = document.getElementById("chuDeTableBody");
+
+            if (keyword === "") {
+                alert("Vui lòng nhập từ khóa!");
+                return;
+            }
+
+            console.log("🔍 Tìm kiếm chủ đề với từ khóa:", keyword);
+
+            fetch("locchude.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ keyword }) // Gửi từ khóa đến server
+            })
+                .then(response => response.json())
+                .then(data => {
+                    chuDeTableBody.innerHTML = ""; // Xóa dữ liệu cũ
+
+                    if (!data.success || !Array.isArray(data.chuDeList)) {
+                        chuDeTableBody.innerHTML = "<tr><td colspan='4'>Lỗi khi tải dữ liệu.</td></tr>";
+                        console.error("❌ Lỗi từ server:", data.error || "Dữ liệu không hợp lệ!");
+                        return;
+                    }
+
+                    const chuDeList = data.chuDeList;
+                    if (chuDeList.length === 0) {
+                        chuDeTableBody.innerHTML = "<tr><td colspan='4'>Không tìm thấy kết quả.</td></tr>";
+                        return;
+                    }
+
+                    let rowsHTML = "";
+                    chuDeList.forEach(chuDe => {
+                        const description = chuDe.mo_ta ? chuDe.mo_ta : "Không có mô tả";
+
+                        rowsHTML += `
+                <tr>
+                    <td>${chuDe.id_chu_de}</td>
+                    <td>${chuDe.ten_chu_de}</td>
+                    <td>${description}</td>
+                    <td style="background: #76b5c5">
+                        <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" 
+                            data-bs-target="#editChuDeModal" onclick="setEditChuDe(${chuDe.id_chu_de})">
+                            Sửa
+                        </button>
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#deleteChuDeModal"
+                            onclick="setDeleteChuDe(${chuDe.id_chu_de})">
+                            Xóa
+                        </button>
+                    </td>
+                </tr>
+            `;
+                    });
+
+                    chuDeTableBody.innerHTML = rowsHTML;
+                    console.log("✅ Kết quả tìm kiếm:", chuDeList);
+                })
+                .catch(error => {
+                    chuDeTableBody.innerHTML = "<tr><td colspan='4'>Lỗi khi tải dữ liệu.</td></tr>";
+                    console.error("❌ Lỗi khi tải dữ liệu:", error);
+                });
+        }
+
+
+        // Gắn sự kiện tìm kiếm khi trang tải xong
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchForm = document.getElementById("searchChuDeForm");
+            if (searchForm) {
+                searchForm.addEventListener("submit", function (event) {
+                    event.preventDefault(); // Ngăn reload trang
+                    fetchFilteredChuDe();
+                });
+            }
+        });
+
+
+    </script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+
+                <!-- Menu chính -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://short.com.vn/VSYd">Quản lý người
+                            dùng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-sach/quanlysach.html">Quản
+                            lý sách</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-tintuc/quanlytintuc.html">Quản
+                            lý tin tức</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-chude/quanlychude.html">Quản
+                            lý chủ đề</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Lienhe-hotro/lienhe_hotro.html">Liên hệ hỗ trợ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Thongke/thongke.html">Thống
+                            kê</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/BaoCao/baocao.html">Báo cáo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-chude/logout.php">Đăng xuất</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+</body>
+<main>
+    <style>
+        body {
+            background-color: #873e23;
+            /* Màu nền mong muốn */
+        }
+
+        .table {
+            background-color: white !important;
+            /* Giữ màu trắng cho bảng */
+        }
+    </style>
+    <div class="container mt-5">
+        <div class="container mt-4" style="margin-bottom: -10px;">
+            <!-- Các nút chức năng -->
+            <div class="mb-3 d-flex justify-content-start">
+                <h2 class="text-center" style="margin-right: 150px; color: white;">Quản lý Chủ Đề</h2>
+                <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#chuDeModal">Thêm</button>
+                <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#searchChuDeModal">Tìm
+                    kiếm</button>
+                <button class="btn btn-warning me-2" type="button" onclick="resetChuDeDisplay()">Reset</button>
+
+                <!-- Giao diện tìm kiếm -->
+                <form id="searchChuDeForm" class="d-flex search-form">
+                    <select class="form-select me-2" id="chuDeFilterType">
+                        <option value="ten_chu_de">Lọc theo tên chủ đề</option>
+                    </select>
+                    <input id="chuDeSearchInput" class="form-control me-2" type="text" placeholder="Nhập từ khóa...">
+                    <button id="chuDeSearchButton" class="btn btn-danger" type="button"
+                        onclick="fetchFilteredChuDe()">Lọc</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bảng hiển thị chủ đề -->
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID Chủ Đề</th>
+                    <th>Tên Chủ Đề</th>
+                    <th>Mô Tả</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody id="chuDeTableBody">
+                <tr>
+                    <td colspan="4">Nhập từ khóa và nhấn "Lọc" để tìm kiếm.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Bootstrap Modal Thêm Chủ Đề -->
+    <div class="modal fade" id="chuDeModal" tabindex="-1" aria-labelledby="chuDeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="chuDeModalLabel">Thêm Chủ Đề</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form nhập thông tin chủ đề -->
+                    <div class="mb-3">
+                        <label for="idChuDe" class="form-label">ID Chủ Đề:</label>
+                        <input type="number" id="idChuDe" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tenChuDe" class="form-label">Tên Chủ Đề:</label>
+                        <input type="text" id="tenChuDe" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="moTa" class="form-label">Mô Tả:</label>
+                        <textarea id="moTa" class="form-control" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-warning" id="clearChuDe">Xóa thông tin</button>
+                    <button type="button" class="btn btn-success" id="saveChuDe">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Bootstrap Modal Sửa Chủ Đề -->
+    <div class="modal fade" id="editChuDeModal" tabindex="-1" aria-labelledby="editChuDeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editChuDeModalLabel">Sửa Chủ Đề</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form chỉnh sửa thông tin chủ đề -->
+                    <div class="mb-3">
+                        <label for="editIdChuDe" class="form-label">ID Chủ Đề:</label>
+                        <input type="number" id="editIdChuDe" class="form-control" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editTenChuDe" class="form-label">Tên Chủ Đề:</label>
+                        <input type="text" id="editTenChuDe" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-warning" id="clearEditChuDe">Xóa thông tin</button>
+                    <button type="button" class="btn btn-primary" id="saveEditChuDe">Lưu thay đổi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Modal Xóa Chủ Đề -->
+    <div id="deleteChuDeModal" class="modal fade" tabindex="-1" aria-labelledby="deleteChuDeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteChuDeModalLabel">Xác nhận xóa chủ đề</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn xóa chủ đề này không?
+                    <input type="hidden" id="deleteIdChuDe">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteChuDe">Xác nhận xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal tìm kiếm chủ đề -->
+    <div class="modal fade" id="searchChuDeModal" tabindex="-1" aria-labelledby="searchChuDeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="searchChuDeModalLabel">Tìm Kiếm Chủ Đề</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="searchMaChuDe" class="form-label">Nhập Mã Chủ Đề:</label>
+                        <input type="text" id="searchMaChuDe" class="form-control">
+                    </div>
+                    <!-- Nút Hủy đóng modal -->
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <!-- Nút Xóa thông tin để reset trường nhập -->
+                    <button type="button" class="btn btn-warning" id="clearSearchChuDeButton">Xóa thông tin</button>
+                    <button type="button" class="btn btn-primary" id="searchChuDeButton">Tìm Kiếm</button>
+                    <hr>
+                    <div id="searchChuDeResult"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+</html>

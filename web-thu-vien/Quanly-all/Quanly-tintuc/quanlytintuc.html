@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Thư viện Online</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap JavaScript (Popper.js đi kèm) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script>
+        function resetDisplay() {
+            console.log("resetNewsDisplay() được gọi!");
+
+            // Xóa nội dung ô tìm kiếm
+            document.getElementById("searchNewsInput").value = "";
+
+            // Đưa bộ lọc về giá trị mặc định
+            document.getElementById("filterNewsType").selectedIndex = 0;
+
+            // Xóa dữ liệu hiện tại trong bảng tin tức
+            const newsTableBody = document.getElementById("newsTableBody");
+            newsTableBody.innerHTML = "";
+
+            // Gọi lại hàm fetchNews để tải lại danh sách tin tức ban đầu
+            fetchNews();
+        }
+
+        /* Hiển thị tin tức */
+        document.addEventListener("DOMContentLoaded", function () {
+            fetchNews();
+        });
+
+        function fetchNews() {
+            fetch("quanlytintuc.php")
+                .then(response => response.json())
+                .then(newsList => {
+                    const newsTableBody = document.getElementById("newsTableBody");
+                    newsTableBody.innerHTML = ""; // Xóa dữ liệu cũ
+
+                    if (!Array.isArray(newsList)) {
+                        console.error("Lỗi: Dữ liệu không hợp lệ", newsList);
+                        newsTableBody.innerHTML = "<tr><td colspan='7'>Lỗi khi tải dữ liệu.</td></tr>";
+                        return;
+                    }
+
+                    newsList.forEach(news => {
+                        const row = document.createElement("tr");
+
+                        row.innerHTML = `
+                    <td>${news.id_tin_tuc}</td>
+                    <td>${news.tieu_de}</td>
+                    <td>${news.noi_dung}</td>
+                    <td><img src="${news.hinh_anh}" alt="Ảnh tin tức" width="50"></td>
+                    <td>${news.ngay_dang}</td>
+                    <td>${news.mo_ta}</td>
+                    <td style="background: #76b5c5">
+                        <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" 
+                            data-bs-target="#editNewsModal" onclick="setEditNews(${news.id_tin_tuc})">
+                            Sửa
+                        </button>
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#deleteNewsModal"
+                            onclick="setDeleteNews(this.getAttribute('data-id'))"
+                            data-id="${news.id_tin_tuc}">
+                            Xóa
+                        </button>
+                    </td>
+                `;
+
+                        newsTableBody.appendChild(row);
+                    });
+
+                    console.log("Đã tải xong danh sách tin tức.");
+                })
+                .catch(error => {
+                    console.error("Lỗi khi tải dữ liệu:", error);
+                    document.getElementById("newsTableBody").innerHTML = "<tr><td colspan='7'>Lỗi kết nối đến server.</td></tr>";
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("DOM Loaded, initializing event listeners for news modals...");
+
+            // Hàm reset các trường trong form của một modal cụ thể
+            function resetFormFields(modalId, fieldIds) {
+                console.log(`Resetting form fields for modal: ${modalId}`);
+                fieldIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        if (el.tagName === "SELECT") {
+                            el.selectedIndex = 0; // Reset dropdown về trạng thái mặc định
+                        } else {
+                            el.value = "";
+                        }
+                    } else {
+                        console.warn(`Không tìm thấy element với id "${id}"`);
+                    }
+                });
+            }
+
+            // Hàm thiết lập sự kiện cho một modal cụ thể
+            function setupModalEventHandlers(modalId, fieldIds, clearBtnId) {
+                // Gán sự kiện cho nút "Xóa thông tin" trong modal
+                const clearBtn = document.getElementById(clearBtnId);
+                if (clearBtn) {
+                    console.log(`Found '${clearBtnId}' button, adding event listener...`);
+                    clearBtn.addEventListener("click", () => {
+                        console.log(`Clear button clicked for modal: ${modalId}`);
+                        resetFormFields(modalId, fieldIds);
+                    });
+                } else {
+                    console.error(`Không tìm thấy nút '${clearBtnId}'. Kiểm tra lại HTML.`);
+                }
+
+                // Reset form khi modal bị đóng
+                const modalEl = document.getElementById(modalId);
+                if (modalEl) {
+                    modalEl.addEventListener("hidden.bs.modal", () => {
+                        console.log(`Modal hidden event triggered for: ${modalId}`);
+                        resetFormFields(modalId, fieldIds);
+                    });
+                } else {
+                    console.error(`Không tìm thấy modal với id '${modalId}'.`);
+                }
+            }
+
+            // Cấu hình cho các modal liên quan đến tin tức
+            const newsModalConfigs = [
+                {
+                    modalId: "newsModal",
+                    fieldIds: ["idTinTuc", "tieuDe", "noiDung", "hinhAnh", "ngayDang", "moTaTin"],
+                    clearBtnId: "clearNews"
+                },
+                {
+                    modalId: "searchNewsModal",
+                    fieldIds: ["searchMaTinTuc"],
+                    clearBtnId: "clearSearchNewsButton"
+                }
+            ];
+
+            // Khởi tạo sự kiện cho từng modal
+            newsModalConfigs.forEach(config => {
+                setupModalEventHandlers(config.modalId, config.fieldIds, config.clearBtnId);
+            });
+        });
+
+
+        /*Thêm tin tức*/
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("saveNews").addEventListener("click", async () => {
+                console.log("Nút Lưu đã được nhấn!");
+
+                const idTinTucElem = document.getElementById("idTinTuc");
+                const tieuDeElem = document.getElementById("tieuDe");
+                const noiDungElem = document.getElementById("noiDung");
+                const hinhAnhElem = document.getElementById("hinhAnh");
+                const ngayDangElem = document.getElementById("ngayDang");
+                const moTaTinElem = document.getElementById("moTaTin");
+
+                // Kiểm tra xem các phần tử có tồn tại không
+                if (!idTinTucElem || !tieuDeElem || !noiDungElem || !hinhAnhElem || !ngayDangElem || !moTaTinElem) {
+                    alert("Lỗi: Một số trường không tồn tại trong HTML!");
+                    return;
+                }
+
+                // Lấy giá trị
+                const idTinTuc = idTinTucElem.value.trim();
+                const tieuDe = tieuDeElem.value.trim();
+                const noiDung = noiDungElem.value.trim();
+                const hinhAnh = hinhAnhElem.value.trim();
+                const ngayDang = ngayDangElem.value.trim();
+                const moTaTin = moTaTinElem.value.trim();
+
+                console.log("Dữ liệu nhập:", { idTinTuc, tieuDe, noiDung, hinhAnh, ngayDang, moTaTin });
+
+                // Kiểm tra rỗng
+                if (!idTinTuc || !tieuDe || !noiDung || !hinhAnh || !ngayDang || !moTaTin) {
+                    alert("Vui lòng nhập đầy đủ thông tin!");
+                    return;
+                }
+
+                // Kiểm tra ID tin tức đã tồn tại
+                try {
+                    const response = await fetch(`kiemtra_id_tintuc.php?idTinTuc=${idTinTuc}`);
+                    const result = await response.json();
+
+                    if (result.exists) {
+                        alert("ID tin tức đã tồn tại!");
+                        return;
+                    }
+
+                    // Nếu hợp lệ, gửi dữ liệu thêm tin tức
+                    const newsData = { idTinTuc, tieuDe, noiDung, hinhAnh, ngayDang, moTaTin };
+
+                    fetch("themtintuc.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(newsData)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert("Thêm tin tức thành công!");
+                                location.reload();
+                            } else {
+                                alert("Lỗi: " + data.error);
+                            }
+                        })
+                        .catch(error => console.error("Lỗi khi gửi dữ liệu:", error));
+
+                } catch (error) {
+                    console.error("Lỗi khi kiểm tra ID:", error);
+                }
+            });
+        });
+
+        /* Sửa Tin Tức */
+        function setEditNews(idTinTuc) {
+            fetch("quanlytintuc.php")
+                .then(response => response.json())
+                .then(news => {
+                    const newsItem = news.find(item => item.id_tin_tuc == idTinTuc);
+                    if (!newsItem) {
+                        console.error("Không tìm thấy tin tức với ID:", idTinTuc);
+                        return;
+                    }
+                    document.getElementById("editIdTinTuc").value = newsItem.id_tin_tuc;
+                    document.getElementById("editTieuDe").value = newsItem.tieu_de;
+                    document.getElementById("editNoiDung").value = newsItem.noi_dung;
+                    document.getElementById("editHinhAnh").value = newsItem.hinh_anh;
+                    document.getElementById("editNgayDang").value = newsItem.ngay_dang;
+                    document.getElementById("editMoTaTin").value = newsItem.mo_ta;
+                })
+                .catch(error => console.error("Lỗi khi tải dữ liệu tin tức:", error));
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            function resetEditNewsForm() {
+                ["editIdTinTuc", "editTieuDe", "editNoiDung", "editHinhAnh", "editNgayDang", "editMoTaTin"]
+                    .forEach(id => document.getElementById(id).value = "");
+            }
+
+            document.getElementById("clearEditNews")?.addEventListener("click", resetEditNewsForm);
+            document.getElementById("editNewsModal")?.addEventListener("hidden.bs.modal", resetEditNewsForm);
+
+            document.getElementById("saveEditNews")?.addEventListener("click", function () {
+                const idTinTuc = document.getElementById("editIdTinTuc").value.trim();
+                const tieuDe = document.getElementById("editTieuDe").value.trim();
+                const noiDung = document.getElementById("editNoiDung").value.trim();
+                const hinhAnh = document.getElementById("editHinhAnh").value.trim();
+                const ngayDang = document.getElementById("editNgayDang").value.trim();
+                const moTaTin = document.getElementById("editMoTaTin").value.trim();
+
+                if (!tieuDe || !noiDung || !hinhAnh || !ngayDang || !moTaTin) {
+                    alert("Vui lòng nhập đầy đủ thông tin!");
+                    return;
+                }
+
+                fetch("suatintuc.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ idTinTuc, tieuDe, noiDung, hinhAnh, ngayDang, moTaTin })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Cập nhật tin tức thành công!");
+                            location.reload();
+                        } else {
+                            alert("Cập nhật thất bại! " + (data.error || ""));
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi cập nhật tin tức:", error));
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            function setDeleteNews(idTinTuc) {
+                console.log("Tin tức cần xóa:", idTinTuc);
+
+                // Kiểm tra input ẩn lưu ID tin tức
+                const deleteInput = document.getElementById("deleteIdTinTuc");
+                if (deleteInput) {
+                    deleteInput.value = idTinTuc;
+                } else {
+                    console.error("Không tìm thấy input ẩn #deleteIdTinTuc.");
+                }
+            }
+
+            // Xử lý sự kiện khi nhấn "Xác nhận xóa"
+            document.getElementById("confirmDeleteNews").addEventListener("click", function () {
+                const deleteInput = document.getElementById("deleteIdTinTuc");
+                const idTinTuc = deleteInput ? deleteInput.value.trim() : "";
+
+                if (!idTinTuc) {
+                    alert("Lỗi: Không tìm thấy mã tin tức cần xóa!");
+                    return;
+                }
+
+                if (!confirm("Bạn có chắc chắn muốn xóa tin tức này?")) {
+                    return;
+                }
+
+                fetch("xoatintuc.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ maTinTuc: idTinTuc }) // Đổi từ idTinTuc thành maTinTuc
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Xóa tin tức thành công!");
+                            location.reload();
+                        } else {
+                            alert("Lỗi: " + data.error);
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi xóa tin tức:", error));
+            });
+
+            // Đưa setDeleteNews vào phạm vi toàn cục để gọi từ HTML
+            window.setDeleteNews = setDeleteNews;
+        });
+
+        /*Tìm kiếm tin tức*/
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchNewsButton = document.getElementById("searchNewsButton");
+            const clearSearchNewsButton = document.getElementById("clearSearchNewsButton");
+            const searchInput = document.getElementById("searchMaTinTuc");
+            const searchResult = document.getElementById("searchNewsResult");
+
+            // Sự kiện cho nút Tìm kiếm
+            searchNewsButton.addEventListener("click", function () {
+                const maTinTuc = searchInput.value.trim();
+
+                if (!maTinTuc) {
+                    alert("Vui lòng nhập mã tin tức!");
+                    return;
+                }
+
+                fetch("timkiemtintuc.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id_tintuc: maTinTuc }) // Gửi ID tin tức cần tìm
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success || !data.news) {
+                            searchResult.innerHTML = `<p class="text-danger">${data.error || "Không tìm thấy tin tức!"}</p>`;
+                        } else {
+                            const news = data.news;
+                            searchResult.innerHTML = `
+                    <table class="table table-bordered mt-3">
+                        <tr><th>ID Tin Tức</th><td>${news.id_tin_tuc || "Không có dữ liệu"}</td></tr>
+                        <tr><th>Tiêu Đề</th><td>${news.tieu_de || "Không có dữ liệu"}</td></tr>
+                        <tr><th>Nội Dung</th><td>${news.noi_dung || "Không có dữ liệu"}</td></tr>
+                        <tr><th>Ngày Đăng</th><td>${news.ngay_dang || "Không có dữ liệu"}</td></tr>
+                        <tr><th>Hình Ảnh</th>
+                            <td>
+                                ${news.hinh_anh
+                                    ? `<img src="${news.hinh_anh}" alt="Hình ảnh tin tức" width="100">`
+                                    : "Không có dữ liệu"}
+                            </td>
+                        </tr>
+                        <tr><th>Mô Tả</th><td>${news.mo_ta || "Không có dữ liệu"}</td></tr>
+                    </table>
+                `;
+                        }
+                    })
+                    .catch(error => console.error("Lỗi khi tìm kiếm tin tức:", error));
+            });
+
+            // Sự kiện cho nút Xóa thông tin (Clear)
+            clearSearchNewsButton.addEventListener("click", function () {
+                searchInput.value = "";
+                searchResult.innerHTML = "";
+                console.log("Thông tin tìm kiếm đã được xóa.");
+            });
+        });
+
+
+        /*Lọc tin tức*/
+        function fetchFilteredNews() {
+            const keyword = document.getElementById("searchNewsInput").value.trim();
+            const filterType = document.getElementById("filterNewsType").value;
+            const newsTableBody = document.getElementById("newsTableBody");
+
+            fetch("loctintuc.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ keyword, filterType })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    newsTableBody.innerHTML = ""; // Xóa dữ liệu cũ
+
+                    if (!data.success || !Array.isArray(data.news)) {
+                        newsTableBody.innerHTML = "<tr><td colspan='6'>Lỗi khi tải dữ liệu.</td></tr>";
+                        console.error("Lỗi từ server:", data.error || "Dữ liệu không hợp lệ!");
+                        return;
+                    }
+
+                    const newsList = data.news;
+                    if (newsList.length === 0) {
+                        newsTableBody.innerHTML = "<tr><td colspan='6'>Không tìm thấy kết quả.</td></tr>";
+                        return;
+                    }
+
+                    let rowsHTML = "";
+                    newsList.forEach(news => {
+                        const imageHTML = news.hinh_anh
+                            ? `<img src="${news.hinh_anh}" alt="Ảnh tin tức" width="50">`
+                            : "Không có ảnh";
+
+                        rowsHTML += `
+                <tr>
+                    <td>${news.id_tin_tuc}</td>
+                    <td>${news.tieu_de}</td>
+                    <td>${news.ngay_dang}</td>
+                    <td>${imageHTML}</td>
+                    <td>${news.mo_ta || "Không có mô tả"}</td>
+                    <td style="background: #76b5c5">
+                        <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" 
+                            data-bs-target="#editNewsModal" onclick="setEditNews(${news.id_tin_tuc})">
+                            Sửa
+                        </button>
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#deleteNewsModal"
+                            onclick="setDeleteNews(${news.id_tin_tuc})">
+                            Xóa
+                        </button>
+                    </td>
+                </tr>
+            `;
+                    });
+
+                    newsTableBody.innerHTML = rowsHTML;
+                })
+                .catch(error => {
+                    newsTableBody.innerHTML = "<tr><td colspan='6'>Lỗi khi tải dữ liệu.</td></tr>";
+                    console.error("Lỗi khi tải dữ liệu:", error);
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchNewsForm = document.getElementById("searchNewsForm");
+            if (searchNewsForm) {
+                searchNewsForm.addEventListener("submit", function (event) {
+                    event.preventDefault(); // Ngăn chặn reload trang
+                    fetchFilteredNews(); // Gọi hàm lọc tin tức
+                });
+            }
+        });
+
+
+
+    </script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+
+                <!-- Menu chính -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://short.com.vn/VSYd">Quản lý người
+                            dùng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-sach/quanlysach.html">Quản
+                            lý sách</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-tintuc/quanlytintuc.html">Quản
+                            lý tin tức</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-chude/quanlychude.html">Quản
+                            lý chủ đề</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Lienhe-hotro/lienhe_hotro.html">Liên
+                            hệ hỗ trợ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Thongke/thongke.html">Thống
+                            kê</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/BaoCao/baocao.html">Báo cáo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://localhost/PHP-project/Web%20Th%c6%b0%20vi%e1%bb%87n/Quanly-all/Quanly-chude/logout.php">Đăng xuất</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <style>
+            body {
+                background-color: #873e23;
+                /* Màu nền mong muốn */
+            }
+
+            .table {
+                background-color: white !important;
+                /* Giữ màu trắng cho bảng */
+            }
+        </style>
+        <div class="container mt-5" style="max-width: 2200px !important;">
+            <div class="container mt-4">
+                <!-- Các nút chức năng -->
+                <div class="mb-3 d-flex justify-content-start">
+                    <h2 class="text-center" style="margin-right: 250px; color: white;">Quản lý tin tức</h2>
+                    <button class="btn btn-primary me-2" data-bs-toggle="modal"
+                        data-bs-target="#newsModal">Thêm</button>
+                    <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#searchNewsModal">Tìm
+                        kiếm</button>
+                    <button class="btn btn-warning me-2" type="button" onclick="resetDisplay()">Reset</button>
+
+                    <!-- Giao diện tìm kiếm -->
+                    <form id="searchNewsForm" class="d-flex search-form">
+                        <select class="form-select me-2" id="filterNewsType">
+                            <option value="tieu_de">Lọc theo tiêu đề</option>
+                        </select>
+                        <input id="searchNewsInput" class="form-control me-2" type="text" placeholder="Nhập từ khóa...">
+                        <button class="btn btn-danger" type="submit">Lọc</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bảng hiển thị kết quả -->
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tiêu Đề</th>
+                        <th>Nội Dung</th>
+                        <th>Hình Ảnh</th>
+                        <th>Ngày Đăng</th>
+                        <th>Mô Tả</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody id="newsTableBody">
+                    <tr>
+                        <td colspan="7">Nhập từ khóa và nhấn "Lọc" để tìm kiếm.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Bootstrap Modal Thêm Tin Tức -->
+        <div class="modal fade" id="newsModal" tabindex="-1" aria-labelledby="newsModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="newsModalLabel">Thêm Tin Tức</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Form nhập thông tin tin tức -->
+                        <div class="mb-3">
+                            <label for="idTinTuc" class="form-label">ID Tin Tức:</label>
+                            <input type="number" id="idTinTuc" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tieuDe" class="form-label">Tiêu đề:</label>
+                            <input type="text" id="tieuDe" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="noiDung" class="form-label">Nội dung:</label>
+                            <textarea id="noiDung" class="form-control" rows="5" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hinhAnh" class="form-label">Hình ảnh:</label>
+                            <input type="text" id="hinhAnh" class="form-control" placeholder="Nhập URL hình ảnh"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ngayDang" class="form-label">Ngày đăng:</label>
+                            <input type="datetime-local" id="ngayDang" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="moTaTin" class="form-label">Mô tả:</label>
+                            <textarea id="moTaTin" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-warning" id="clearNews">Xóa thông tin</button>
+                        <button type="button" class="btn btn-success" id="saveNews">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap Modal Sửa Tin Tức -->
+        <div class="modal fade" id="editNewsModal" tabindex="-1" aria-labelledby="editNewsModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editNewsModalLabel">Sửa Tin Tức</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Form chỉnh sửa tin tức -->
+                        <div class="mb-3">
+                            <label for="editIdTinTuc" class="form-label">ID Tin Tức:</label>
+                            <input type="number" id="editIdTinTuc" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editTieuDe" class="form-label">Tiêu Đề:</label>
+                            <input type="text" id="editTieuDe" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNoiDung" class="form-label">Nội Dung:</label>
+                            <textarea id="editNoiDung" class="form-control" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editHinhAnh" class="form-label">Hình ảnh:</label>
+                            <input type="text" id="editHinhAnh" class="form-control" placeholder="Nhập URL hình ảnh"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNgayDang" class="form-label">Ngày Đăng:</label>
+                            <input type="date-local" id="editNgayDang" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMoTaTin" class="form-label">Mô tả tin tức:</label>
+                            <textarea id="editMoTaTin" class="form-control" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-warning" id="clearEditNews">Xóa thông tin</button>
+                        <button type="button" class="btn btn-primary" id="saveEditNews">Lưu thay đổi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Xóa Tin Tức -->
+        <div id="deleteNewsModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Xác nhận xóa tin tức</h5>
+                    </div>
+                    <div class="modal-body">
+                        Bạn có chắc chắn muốn xóa tin tức này không?
+                        <input type="hidden" id="deleteIdTinTuc">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteNews">Xác nhận xóa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal tìm kiếm tin tức -->
+        <div class="modal fade" id="searchNewsModal" tabindex="-1" aria-labelledby="searchNewsModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="searchNewsModalLabel">Tìm Kiếm Tin Tức</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="searchMaTinTuc" class="form-label">Nhập Mã Tin Tức:</label>
+                            <input type="text" id="searchMaTinTuc" class="form-control">
+                        </div>
+                        <!-- Nút Hủy đóng modal -->
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <!-- Nút Xóa thông tin để reset trường nhập -->
+                        <button type="button" class="btn btn-warning" id="clearSearchNewsButton">Xóa thông tin</button>
+                        <button type="button" class="btn btn-primary" id="searchNewsButton">Tìm Kiếm</button>
+                        <hr>
+                        <div id="searchNewsResult"></div> <!-- Kết quả tìm kiếm -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</body>
+
+</html>
